@@ -13,35 +13,68 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using Viewer_Modren_UI.Helpers;
+using GroupDocs.Viewer.Domain.Options;
+using GroupDocs.Viewer.Domain.Containers;
 
 namespace WebForm_Modern_UI.Controllers
 {
     public class PageImageController : ApiController
     {
-        public HttpResponseMessage Get(int? width, string file, int page, string watermarkText, int? watermarkColor, WatermarkPosition? watermarkPosition, int? watermarkWidth, byte watermarkOpacity, int? height = null)
+        public HttpResponseMessage Get(int? width, string file, int page, string watermarkText, int? watermarkColor, WatermarkPosition? watermarkPosition, int? watermarkWidth, byte watermarkOpacity, int? rotate, int? height = null)
         {
             if (Utils.IsValidUrl(file))
                 file = Utils.DownloadToStorage(file);
             ViewerImageHandler handler = Utils.CreateViewerImageHandler();
-            ImageOptions o = new ImageOptions();
-            List<int> pageNumberstoRender = new List<int>();
-            pageNumberstoRender.Add(page);
-            o.PageNumbersToRender = pageNumberstoRender;
-            o.PageNumber = page;
-            o.CountPagesToRender = 1;
+            ImageOptions options = new ImageOptions();
+
+            options.PageNumbersToRender = new List<int>(new int[] { page });
+            options.PageNumber = page;
+            options.CountPagesToRender = 1;
+
             if (watermarkText != "")
-                o.Watermark = Utils.GetWatermark(watermarkText, watermarkColor, watermarkPosition, watermarkWidth, watermarkOpacity);
+                options.Watermark = Utils.GetWatermark(watermarkText, watermarkColor, watermarkPosition, watermarkWidth, watermarkOpacity);
+
             if (width.HasValue)
             {
-                o.Width = Convert.ToInt32(width);
+                int w = Convert.ToInt32(width);
+                options.Width = w;
             }
+
             if (height.HasValue)
             {
-                o.Height = Convert.ToInt32(height);
+                options.Height = options.Height;
             }
-            Stream stream = null;
-            List<PageImage> list = Utils.LoadPageImageList(handler, file, o);
-            foreach (PageImage pageImage in list.Where(x => x.PageNumber == page)) { stream = pageImage.Stream; };
+
+            if (rotate.HasValue)
+            {
+                if (rotate.Value > 0)
+                {
+                    if (width.HasValue)
+                    {
+                        int side = options.Width;
+
+                        DocumentInfoContainer documentInfoContainer = handler.GetDocumentInfo(file);
+                        int pageAngle = documentInfoContainer.Pages[page - 1].Angle;
+                        if (pageAngle == 90 || pageAngle == 270)
+                            options.Height = side;
+                        else
+                            options.Width = side;
+                    }
+
+                    options.Transformations = Transformation.Rotate;
+                    handler.RotatePage(file, new RotatePageOptions(page, rotate.Value));
+                }
+            }
+            else
+            {
+                options.Transformations = Transformation.None;
+                handler.RotatePage(file, new RotatePageOptions(page, 0));
+            }
+
+            List<PageImage> list = handler.GetPages(file, options);
+            PageImage pageImage = list.Single(_ => _.PageNumber == page);
+
+            Stream stream = pageImage.Stream;
             var result = new HttpResponseMessage(HttpStatusCode.OK);
             Image image = Image.FromStream(stream);
             MemoryStream memoryStream = new MemoryStream();

@@ -19,7 +19,7 @@ using Viewer_Modren_UI.Helpers;
 
 namespace WebForm_Modern_UI.Controllers
 {
-   
+
     public class PageResourceController : ApiController
     {
         public HttpResponseMessage Get(string file, int page, string resource)
@@ -39,17 +39,20 @@ namespace WebForm_Modern_UI.Controllers
             string type = "";
             if (fileResource != null)
             {
-                switch ((int)fileResource.ResourceType)
+                switch (fileResource.ResourceType)
                 {
-                    case 2:
+                    case HtmlResourceType.Font:
                         type = "application/font-woff";
                         break;
-                    case 3:
+                    case HtmlResourceType.Style:
 
                         type = "text/css";
                         break;
-                    case 1:
+                    case HtmlResourceType.Image:
                         type = "image/jpeg";
+                        break;
+                    case HtmlResourceType.Graphics:
+                        type = "image/svg+xml";
                         break;
                 }
                 Stream stream = handler.GetResource(file, fileResource);

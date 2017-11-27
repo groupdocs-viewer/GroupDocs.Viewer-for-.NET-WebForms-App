@@ -114,6 +114,8 @@
     <Content Include="App_Data\cache\calibre_docx\html\fd.xml" />
     <Content Include="App_Data\cache\candy_pdf\html\fd.xml" />
     <Content Include="App_Data\README.txt" />
+    <Content Include="Content\custom.js" />
+    <Content Include="Content\GDVLogo.png" />
     <Content Include="packages.config" />
     <Content Include="App_Data\calibre.docx" />
     <Content Include="App_Data\candy.pdf" />
