@@ -8,13 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons|Roboto+Condensed:400,700">
-    <link href="/Content/style.css" rel="stylesheet" />
+    <link href="Content/style.css" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-resource.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
-    <script src="/Content/custom.js"></script>
+    <script src="Content/custom.js"></script>
     <script>
 
         // For complete documentation, please visit: https://docs.groupdocs.com/display/viewernet/GroupDocs.Viewer+for+.NET+-+MVC+Modern+UI
@@ -28,6 +28,7 @@
         // Un-comment to Show/Hide Toolbar Controls
         //ShowWatermark = false;
         //ShowImageToggle = false;
+        //ShowZooming = false;
         //ShowDownloads = false;
         //ShowFileSelection = false;
         //ShowThubmnailPanel = false;
@@ -37,6 +38,7 @@
         DefaultFilePath = 'calibre.docx'; // leave empty to skip default file loading, defined file name should be available in application 'App_Data' folder.
         isImageToggle = false; // set true to display image mode rendering by default.
         RotateAngel = 0; // integer value e.g 0 or 90 or 180 or 270.
+        ZoomValue = 100; // integer values, zoom level default value in percentage (%) 5% to 600%.
 
         // Set Watermark properties
         WatermarkText = "my watermark text";
@@ -116,7 +118,7 @@
         <md-content flex layout="row" md-scroll-y>
       <md-content flex id="content" class="md-padding" role="main">
         <div ng-controller="PagesController">
-          <md-card card-set-dimensions ng-repeat="item in docInfo.pages">
+          <md-card ng-repeat="item in docInfo.pages">
             <a name="page-view-{{ item.number }}"></a>
             <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
           </md-card>
@@ -148,8 +150,38 @@
         </md-tabs>
       </md-sidenav>
     </md-content>
+        <footer>
+            <md-toolbar ng-controller="ToolbarController" layout="row" hide-print md-whiteframe="4" class="md-toolbar-tools md-scroll-shrink" style="max-height: 40px !important; min-height: 30px !important;">
+        <span flex></span>
+        <span flex></span>
+
+        <select id="zoomselect" style="border: solid 1px #ccc; width:90px; font-size:small;" ng-model="itemSelected" ng-change="zoomLevels(itemSelected)" ng-hide="ShowHideTools.IsShowZooming">
+          <option value="6">600%</option>
+          <option value="5">500%</option>
+          <option value="4">400%</option>
+          <option value="3">300%</option>
+          <option value="2">200%</option>
+          <option value="1.5">150%</option>
+          <option value="1.25">125%</option>
+          <option value="1">100%</option>
+          <option value="0.75">75%</option>
+          <option value="0.50">50%</option>
+          <option value="0.25">25%</option>
+          <option value="0.05">5%</option>
+          <option value="1.97">Fit to Width</option>
+          <option value="0.45">Fit to Height</option>
+        </select>
+        <md-button ng-click="zoomInDocument()" class="md-icon-button" ng-hide="ShowHideTools.IsShowZooming">
+          <md-icon>zoom_in</md-icon>
+          <md-tooltip md-direction="top">Zoom In</md-tooltip>
+        </md-button>
+        <md-button style="padding-right:10px;" ng-click="zoomOutDocument()" class="md-icon-button" ng-hide="ShowHideTools.IsShowZooming">
+          <md-icon>zoom_out</md-icon>
+          <md-tooltip md-direction="top">Zoom Out</md-tooltip>
+        </md-button>
+      </md-toolbar>
+        </footer>
+
     </div>
 </body>
 </html>
-
-

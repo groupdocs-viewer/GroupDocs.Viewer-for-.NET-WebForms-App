@@ -4,6 +4,13 @@ var ngApp = angular.module('GroupDocsViewer', ['ngMaterial', 'ngResource']);
 ngApp.value('FilePath', DefaultFilePath);
 ngApp.value('isImage', isImageToggle);
 ngApp.value('Rotate', RotateAngel);
+
+ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
+ZoomValue = (ZoomValue <= 0.05 ? 0.05 : ZoomValue);
+ZoomValue = (ZoomValue >= 6 ? 6 : ZoomValue);
+ZoomValue = parseFloat(ZoomValue);
+
+ngApp.value('Zoom', ZoomValue);
 ngApp.value('Watermark', {
     Text: (ShowWatermark ? WatermarkText : ""),
     Color: WatermarkColor,
@@ -17,6 +24,7 @@ ngApp.value('ShowHideTools', {
     IsShowWatermark: !ShowWatermark,
     IsShowImageToggle: !ShowImageToggle,
     IsThubmnailPanel: !ShowThubmnailPanel,
+    IsShowZooming: !ShowZooming,
     IsShowRotateImage: !ShowRotateImage,
     IsShowDownloads: !ShowDownloads
 });
@@ -39,7 +47,7 @@ ngApp.factory('DocumentPagesFactory', function ($resource) {
     });
 });
 
-ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $mdSidenav, isImage, Watermark, ShowHideTools, FilePath) {
+ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $mdSidenav, isImage, Zoom, Watermark, ShowHideTools, FilePath) {
 
     $scope.toggleLeft = function () {
         $mdSidenav('left').toggle().then(function () {
@@ -50,6 +58,8 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
     $scope.openMenu = function ($mdOpenMenu, ev) {
         $mdOpenMenu(ev);
     };
+
+    $scope.Zoom = ZoomValue;
 
     $scope.Watermark = {
         Text: Watermark.Text,
@@ -64,6 +74,7 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         IsFileSelection: ShowHideTools.IsFileSelection,
         IsShowImageToggle: ShowHideTools.IsShowImageToggle,
         IsThubmnailPanel: ShowHideTools.IsThubmnailPanel,
+        IsShowZooming: ShowHideTools.IsShowZooming,
         IsShowRotateImage: ShowHideTools.IsShowRotateImage,
         IsShowDownloads: ShowHideTools.IsShowDownloads
     };
@@ -80,6 +91,40 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
     };
 
     $scope.selected = false;
+
+    $scope.zoomInDocument = function () {
+        ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
+        ZoomValue = (ZoomValue <= 0 ? 0.05 : ZoomValue);
+        ZoomValue = parseFloat(ZoomValue);
+        ZoomValue += 0.25;
+        Zoom = ZoomValue;
+        if ($scope.isImage)
+            $rootScope.$broadcast('zin-file', $rootScope.selectedFile);
+        else
+            resizeIFrame();
+    };
+
+    $scope.zoomOutDocument = function () {
+        ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
+        ZoomValue = (ZoomValue <= 0 ? 0.05 : ZoomValue);
+        ZoomValue = parseFloat(ZoomValue);
+        ZoomValue -= 0.25;
+        Zoom = ZoomValue;
+        if ($scope.isImage)
+            $rootScope.$broadcast('zout-file', $rootScope.selectedFile);
+        else
+            resizeIFrame();
+    };
+
+    $scope.zoomLevels = function (selectedzoomlevel) {
+        console.log(selectedzoomlevel);
+        ZoomValue = parseFloat(selectedzoomlevel);
+        Zoom = ZoomValue;
+        if ($scope.isImage)
+            $rootScope.$broadcast('zin-file', $rootScope.selectedFile);
+        else
+            resizeIFrame();
+    }
 
     $scope.togelToImageDocument = function () {
         $rootScope.$broadcast('toggle-file', $rootScope.selectedFile);
@@ -115,7 +160,7 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
 });
 
 ngApp.controller('ThumbnailsController',
-    function ThumbnailsController($rootScope, $scope, $sce, $mdSidenav, DocumentPagesFactory, FilePath, Watermark, ShowHideTools, Rotate) {
+    function ThumbnailsController($rootScope, $scope, $sce, $mdSidenav, DocumentPagesFactory, FilePath, Watermark, ShowHideTools, Rotate, Zoom) {
         $scope.isLeftSidenavVislble = false;
         if (FilePath) {
             $rootScope.selectedFile = FilePath;
@@ -158,7 +203,8 @@ ngApp.controller('ThumbnailsController',
                     + '&watermarkPosition=' + Watermark.Position
                     + '&watermarkWidth=' + Watermark.Width
                     + '&watermarkOpacity=' + Watermark.Opacity
-                    + '&rotate=' + Rotate);
+                    + '&rotate=' + Rotate
+                    + '&zoom=' + parseInt(Zoom * 100));
             }
         };
         $scope.createAttachmentThumbnailPageUrl = function (selectedFile, attachment, itemNumber) {
@@ -178,7 +224,7 @@ ngApp.controller('ThumbnailsController',
 );
 
 ngApp.controller('PagesController',
-    function ThumbnailsController($rootScope, $scope, $sce, $document, DocumentPagesFactory, FilePath, Watermark, ShowHideTools, isImage, Rotate) {
+    function ThumbnailsController($rootScope, $scope, $sce, $document, DocumentPagesFactory, FilePath, Watermark, ShowHideTools, isImage, Rotate, Zoom) {
         if (FilePath) {
             $rootScope.selectedFile = FilePath;
             $scope.docInfo = DocumentPagesFactory.query({
@@ -201,6 +247,16 @@ ngApp.controller('PagesController',
                 Rotate = 0;
         });
 
+        $scope.$on('zin-file', function (event, selectedFile) {
+            $rootScope.selectedFile = selectedFile;
+            Zoom = ZoomValue;
+        });
+
+        $scope.$on('zout-file', function (event, selectedFile) {
+            $rootScope.selectedFile = selectedFile;
+            Zoom = ZoomValue;
+        });
+
         $scope.$on('toggle-file', function (event, selectedFile) {
             $rootScope.selectedFile = selectedFile;
             isImage = !isImage;
@@ -215,7 +271,8 @@ ngApp.controller('PagesController',
                         + '&watermarkPosition=' + Watermark.Position
                         + '&watermarkWidth=' + Watermark.Width
                         + '&watermarkOpacity=' + Watermark.Opacity
-                        + '&rotate=' + Rotate);
+                        + '&rotate=' + Rotate
+                        + '&zoom=' + parseInt(Zoom * 100));
             }
             else {
                 return $sce.trustAsResourceUrl('/pagehtml?file='
@@ -246,6 +303,10 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
         restrict: 'A',
         link: function ($scope, element, attrs) {
             element.on('load', function () {
+                ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
+                ZoomValue = (ZoomValue <= 0.05 ? 0.05 : ZoomValue);
+                ZoomValue = (ZoomValue >= 6 ? 6 : ZoomValue);
+
                 var body = element[0].contentWindow.document.body,
                             html = element[0].contentWindow.document.documentElement,
                             height = Math.max(
@@ -254,26 +315,99 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
                                 html.clientHeight,
                                 html.scrollHeight,
                                 html.offsetHeight
-                            );
+                        );
 
-                element.css('width', '100%');
-                element.css('height', parseInt(height) + 'px');
-                if ($scope.isImage) {
+                if (!EnableContextMenu)
+                    element[0].contentWindow.document.body.setAttribute("oncontextmenu", "return false;");
+
+                height = parseInt(height) + 50;
+
+                if (!ShowWatermark)
                     element[0].contentWindow.document.body.style = "text-align: center !important;";
+
+                if (isImageToggle)
+                    element[0].contentWindow.document.body.style = "text-align: center !important;";
+
+                element[0].style = "height:" + parseInt(height) + "px!important; width:100%!important; ";
+
+                height = (height * (parseFloat(ZoomValue) < 1 ? 1 : parseFloat(ZoomValue)));
+                height = parseInt(height);
+                height = parseInt(height) + 10;
+
+                if (ZoomValue > 1) {
+                    element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -moz-transform-origin: 0 0; -o-transform: scale(" + ZoomValue + "); -o-transform-origin: 0 0; -webkit-transform: scale(" + ZoomValue + "); -webkit-transform-origin: 0 0; height:" + height + "px !important; width:100%!important; overflow: visible !important;";
                 }
-                resizeIFrame();
+                else {
+                    element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -o-transform: scale(" + ZoomValue + "); -webkit-transform: scale(" + ZoomValue + "); height:" + height + "px !important; width:100%!important; overflow: visible !important;";
+                }
+
+                var selectObj = document.getElementById('zoomselect');
+                if (selectObj != undefined) {
+                    for (var i = 0; i < selectObj.options.length; i++) {
+                        if (selectObj.options[i].value == ZoomValue) {
+                            selectObj.options[i].selected = true;
+                        }
+                    }
+                }
             });
         }
     }
 }]);
 
-ngApp.directive('cardSetDimensions', function ($window) {
-    return {
-        link: function ($scope, element, attrs) {
-            resizeIFrame();
-        }
-    }
-});
+//ngApp.directive('cardSetDimensions', function ($window) {
+//    return {
+//        link: function ($scope, element, attrs) {
+
+//            ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
+//            ZoomValue = (ZoomValue <= 0.05 ? 0.05 : ZoomValue);
+//            ZoomValue = (ZoomValue >= 6 ? 6 : ZoomValue);
+
+//            var body = element[0].contentWindow.document.body,
+//                        html = element[0].contentWindow.document.documentElement,
+//                        height = Math.max(
+//                            body.scrollHeight,
+//                            body.offsetHeight,
+//                            html.clientHeight,
+//                            html.scrollHeight,
+//                            html.offsetHeight
+//                    );
+
+//            height = parseInt(height) + 50;
+//            height = (height * (parseFloat(ZoomValue) < 1 ? 1 : parseFloat(ZoomValue)));
+//            height = parseInt(height);
+//            height = parseInt(height) + 10;
+
+//            if (ZoomValue > 1) {
+//                element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -moz-transform-origin: 0 0; -o-transform: scale(" + ZoomValue + "); -o-transform-origin: 0 0; -webkit-transform: scale(" + ZoomValue + "); -webkit-transform-origin: 0 0; height:" + height + "px !important; width:100%!important; overflow: visible !important;";
+//            }
+//            else {
+//                element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -o-transform: scale(" + ZoomValue + "); -webkit-transform: scale(" + ZoomValue + "); height:" + height + "px !important; width:100%!important; overflow: visible !important;";
+//            }
+
+//            //if (ZoomValue > 1) {
+//            //    element.css("zoom", ZoomValue);
+//            //    element.css("-moz-transform", "scale(" + ZoomValue + ")");
+//            //    element.css("-moz-transform-origin", "0 0");
+//            //    element.css("-o-transform", "scale(" + ZoomValue + ")");
+//            //    element.css("-o-transform-origin", "0 0");
+//            //    element.css("-webkit-transform", "scale(" + ZoomValue + ")");
+//            //    element.css("-webkit-transform-origin", "0 0");
+//            //    element.css("height", height + "px");
+//            //    element.css("width", "100%");
+//            //    element.css("overflow", "visible");
+//            //}
+//            //else {
+//            //    element.css("zoom", ZoomValue);
+//            //    element.css("-moz-transform", "scale(" + ZoomValue + ")");
+//            //    element.css("-o-transform", "scale(" + ZoomValue + ")");
+//            //    element.css("-webkit-transform", "scale(" + ZoomValue + ")");
+//            //    element.css("height", height + "px");
+//            //    element.css("width", "100%");
+//            //    element.css("overflow", "visible");
+//            //}
+//        }
+//    }
+//});
 
 ngApp.controller('AvailableFilesController', function AvailableFilesController($rootScope, $scope, FilesFactory, DocumentPagesFactory, FilePath) {
     $rootScope.list = FilesFactory.query();

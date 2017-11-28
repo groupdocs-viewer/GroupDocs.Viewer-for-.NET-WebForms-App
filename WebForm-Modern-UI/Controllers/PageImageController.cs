@@ -20,7 +20,7 @@ namespace WebForm_Modern_UI.Controllers
 {
     public class PageImageController : ApiController
     {
-        public HttpResponseMessage Get(int? width, string file, int page, string watermarkText, int? watermarkColor, WatermarkPosition? watermarkPosition, int? watermarkWidth, byte watermarkOpacity, int? rotate, int? height = null)
+        public HttpResponseMessage Get(int? width, string file, int page, string watermarkText, int? watermarkColor, WatermarkPosition? watermarkPosition, int? watermarkWidth, byte watermarkOpacity, int? rotate, int? zoom, int? height = null)
         {
             if (Utils.IsValidUrl(file))
                 file = Utils.DownloadToStorage(file);
@@ -37,12 +37,15 @@ namespace WebForm_Modern_UI.Controllers
             if (width.HasValue)
             {
                 int w = Convert.ToInt32(width);
+                if (zoom.HasValue)
+                    w = w + zoom.Value;
                 options.Width = w;
             }
 
             if (height.HasValue)
             {
-                options.Height = options.Height;
+                if (zoom.HasValue)
+                    options.Height = options.Height + zoom.Value;
             }
 
             if (rotate.HasValue)
