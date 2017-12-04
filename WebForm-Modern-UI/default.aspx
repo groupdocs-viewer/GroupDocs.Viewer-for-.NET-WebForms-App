@@ -17,7 +17,7 @@
     <script src="Content/custom.js"></script>
     <script>
 
-        // For complete documentation, please visit: https://docs.groupdocs.com/display/viewernet/GroupDocs.Viewer+for+.NET+-+MVC+Modern+UI
+        // For complete documentation, please visit: https://docs.groupdocs.com/display/viewernet/GroupDocs.Viewer+for+.NET+-+WebForm+Modern+UI
         // Custom.js should be called before this JS parameter configurationns.
 
         ///// ********************************* //////
@@ -32,6 +32,7 @@
         //ShowDownloads = false;
         //ShowFileSelection = false;
         //ShowThubmnailPanel = false;
+        //ShowPagingPanel = false;
         EnableContextMenu = true;
 
         // Set Default values
@@ -153,6 +154,25 @@
         <footer>
             <md-toolbar ng-controller="ToolbarController" layout="row" hide-print md-whiteframe="4" class="md-toolbar-tools md-scroll-shrink" style="max-height: 40px !important; min-height: 30px !important;">
         <span flex></span>
+        <div class="" ng-hide="ShowHideTools.IsShowPagingPanel">
+          <md-button ng-click="navigatePage('f')" class="md-icon-button" ng-disabled="!selectedFile">
+            <md-icon>first_page</md-icon>
+            <md-tooltip md-direction="top">First Page</md-tooltip>
+          </md-button>
+          <md-button ng-click="navigatePage('-')" class="md-icon-button" ng-disabled="!selectedFile">
+            <md-icon>navigate_before</md-icon>
+            <md-tooltip md-direction="top">Previous Page</md-tooltip>
+          </md-button>
+          <input id="inputcurrentpage" my-enter="navigatePage(this.value)" value="0" style="background: transparent; border: solid 1px #ccc; color: #fff !important; width: 50px; text-align:center; height: 18px; font-size: small;" /><span id="spantoolpager" style="font-size: small;"></span>
+          <md-button ng-click="navigatePage('+')" class="md-icon-button" ng-disabled="!selectedFile">
+            <md-icon>navigate_next</md-icon>
+            <md-tooltip md-direction="top">Next Page</md-tooltip>
+          </md-button>
+          <md-button ng-click="navigatePage('e')" class="md-icon-button" ng-disabled="!selectedFile">
+            <md-icon>last_page</md-icon>
+            <md-tooltip md-direction="top">Last Page</md-tooltip>
+          </md-button>
+        </div>
         <span flex></span>
 
         <select id="zoomselect" style="border: solid 1px #ccc; width:90px; font-size:small;" ng-model="itemSelected" ng-change="zoomLevels(itemSelected)" ng-hide="ShowHideTools.IsShowZooming">

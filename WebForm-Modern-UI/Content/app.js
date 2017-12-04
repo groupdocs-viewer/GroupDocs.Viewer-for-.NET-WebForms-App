@@ -26,6 +26,7 @@ ngApp.value('ShowHideTools', {
     IsThubmnailPanel: !ShowThubmnailPanel,
     IsShowZooming: !ShowZooming,
     IsShowRotateImage: !ShowRotateImage,
+    IsShowPagingPanel: !ShowPagingPanel,
     IsShowDownloads: !ShowDownloads
 });
 
@@ -76,6 +77,7 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         IsThubmnailPanel: ShowHideTools.IsThubmnailPanel,
         IsShowZooming: ShowHideTools.IsShowZooming,
         IsShowRotateImage: ShowHideTools.IsShowRotateImage,
+        IsShowPagingPanel: ShowHideTools.IsShowPagingPanel,
         IsShowDownloads: ShowHideTools.IsShowDownloads
     };
 
@@ -349,6 +351,8 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
                         }
                     }
                 }
+
+                UpdatePager();
             });
         }
     }

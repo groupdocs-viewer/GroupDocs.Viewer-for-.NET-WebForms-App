@@ -116,7 +116,9 @@
     <Content Include="App_Data\README.txt" />
     <Content Include="Content\custom.js" />
     <Content Include="Content\GDVLogo.png" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="App_Data\calibre.docx" />
     <Content Include="App_Data\candy.pdf" />
     <None Include="Web.Debug.config">

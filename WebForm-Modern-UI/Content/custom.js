@@ -21,6 +21,9 @@ var ShowRotateImage = true;
 var ShowDownloads = true;
 var ShowFileSelection = true;
 var ShowThubmnailPanel = true;
+var ShowPagingPanel = true;
+var TotalDocumentPages = 0;
+var CurrentDocumentPage = 1;
 
 function resizeIFrame() {
 
@@ -30,6 +33,8 @@ function resizeIFrame() {
 
     var mdcards = document.querySelectorAll("md-card");
     var iframes = document.querySelectorAll("iframe");
+
+    TotalDocumentPages = parseInt(iframes.length);
 
     for (var i = 0; i < iframes.length; i++) {
         var body = iframes[i].contentWindow.document.body,
@@ -81,6 +86,34 @@ function resizeIFrame() {
         for (var i = 0; i < selectObj.options.length; i++) {
             if (selectObj.options[i].value == ZoomValue) {
                 selectObj.options[i].selected = true;
+            }
+        }
+    }
+    UpdatePager();
+    FocusSelectedPage();
+}
+
+function FocusSelectedPage() {
+    var elementA = document.getElementsByName('page-view-' + CurrentDocumentPage);
+    if (elementA != undefined) {
+        if (elementA[0] != undefined) {
+            elementA[0].focus();
+        }
+    }
+}
+
+function UpdatePager() {
+    document.getElementById('spantoolpager').innerHTML = ' of ' + TotalDocumentPages;
+    document.getElementById('inputcurrentpage').value = CurrentDocumentPage;
+
+    for (var i = 1; i <= TotalDocumentPages; i++) {
+        var element = document.getElementsByName('imghumb-' + i);
+        if (element != undefined) {
+            if (element[0] != undefined) {
+                element[0].className = '';
+                if (i == CurrentDocumentPage) {
+                    element[0].className = 'selectedthumbnail';
+                }
             }
         }
     }
