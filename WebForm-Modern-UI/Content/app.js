@@ -11,6 +11,8 @@ ZoomValue = (ZoomValue >= 6 ? 6 : ZoomValue);
 ZoomValue = parseFloat(ZoomValue);
 
 ngApp.value('Zoom', ZoomValue);
+ngApp.value('TotalPages', TotalDocumentPages);
+ngApp.value('CurrentPage', 1);
 ngApp.value('Watermark', {
     Text: (ShowWatermark ? WatermarkText : ""),
     Color: WatermarkColor,
@@ -48,7 +50,7 @@ ngApp.factory('DocumentPagesFactory', function ($resource) {
     });
 });
 
-ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $mdSidenav, isImage, Zoom, Watermark, ShowHideTools, FilePath) {
+ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $mdSidenav, isImage, Zoom, TotalPages, CurrentPage, Watermark, ShowHideTools, FilePath) {
 
     $scope.toggleLeft = function () {
         $mdSidenav('left').toggle().then(function () {
@@ -61,6 +63,9 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
     };
 
     $scope.Zoom = ZoomValue;
+
+    $scope.TotalPages = TotalDocumentPages;
+    $scope.CurrentPage = CurrentPage;
 
     $scope.Watermark = {
         Text: Watermark.Text,
@@ -119,7 +124,6 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
     };
 
     $scope.zoomLevels = function (selectedzoomlevel) {
-        console.log(selectedzoomlevel);
         ZoomValue = parseFloat(selectedzoomlevel);
         Zoom = ZoomValue;
         if ($scope.isImage)
@@ -159,6 +163,54 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
             $rootScope.$broadcast('selected-file-changed', $rootScope.list[$rootScope.list.indexOf($rootScope.selectedFile) - 1]);
         }
     };
+
+    $scope.navigatePage = function (options) {
+        if ($rootScope.selectedFile) {
+            TotalPages = parseInt(TotalDocumentPages);
+            CurrentPage = parseInt(CurrentDocumentPage);
+
+            if (options == '+') {
+                CurrentPage += 1;
+                if (CurrentPage > TotalPages) {
+                    CurrentPage = TotalPages;
+                }
+                location.hash = 'page-view-' + CurrentPage;
+            }
+            else if (options == '-') {
+                CurrentPage -= 1;
+
+                if (CurrentPage < 1) {
+                    CurrentPage = 1;
+                }
+
+                location.hash = 'page-view-' + CurrentPage;
+            }
+            else if (options == 'f') {
+                CurrentPage = 1;
+                location.hash = 'page-view-1';
+            }
+            else if (options == 'e') {
+                CurrentPage = TotalPages;
+                location.hash = 'page-view-' + TotalPages;
+            }
+            else {
+                if (document.getElementById('inputcurrentpage').value != '')
+                    CurrentPage = parseInt(document.getElementById('inputcurrentpage').value);
+                if (CurrentPage > TotalPages) {
+                    CurrentPage = TotalPages;
+                }
+
+                if (CurrentPage < 1) {
+                    CurrentPage = 1;
+                }
+
+                location.hash = 'page-view-' + CurrentPage;
+            }
+
+            CurrentDocumentPage = parseInt(CurrentPage);
+            UpdatePager();
+        }
+    };
 });
 
 ngApp.controller('ThumbnailsController',
@@ -185,11 +237,15 @@ ngApp.controller('ThumbnailsController',
 
         $scope.onThumbnailClick = function ($event, item) {
             $mdSidenav('left').toggle().then(function () {
+                $scope.CurrentPage = parseInt(item.number);
+                CurrentDocumentPage = $scope.CurrentPage;
+                UpdatePager();
                 location.hash = 'page-view-' + item.number;
                 $rootScope.$broadcast('md-sidenav-toggle-complete', $mdSidenav('left'));
                 $scope.selected = item;
             });
         };
+
         $scope.onAttachmentThumbnailClick = function ($event, name, number) {
             $mdSidenav('left').toggle().then(function () {
                 location.hash = 'page-view-' + name + '-' + number;
@@ -352,6 +408,10 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
                     }
                 }
 
+                var iframes = document.querySelectorAll("iframe");
+
+                TotalDocumentPages = parseInt(iframes.length);
+
                 UpdatePager();
             });
         }
@@ -432,4 +492,17 @@ ngApp.controller('AvailableFilesController', function AvailableFilesController($
         $rootScope.$broadcast('selected-file-changed', item);
     };
 
+});
+
+ngApp.directive('myEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if (event.which === 13) {
+                scope.$apply(function () {
+                    scope.$eval(attrs.myEnter);
+                });
+                event.preventDefault();
+            }
+        });
+    };
 });

@@ -33,7 +33,7 @@
         //ShowFileSelection = false;
         //ShowThubmnailPanel = false;
         //ShowPagingPanel = false;
-        EnableContextMenu = true;
+        //EnableContextMenu = true;
 
         // Set Default values
         DefaultFilePath = 'calibre.docx'; // leave empty to skip default file loading, defined file name should be available in application 'App_Data' folder.
@@ -41,7 +41,7 @@
         RotateAngel = 0; // integer value e.g 0 or 90 or 180 or 270.
         ZoomValue = 100; // integer values, zoom level default value in percentage (%) 5% to 600%.
 
-        // Set Watermark properties
+        // Set Watermark properties.
         WatermarkText = "my watermark text";
         WatermarkColor = 4366342; // integer values represents the ARGB color.
         WatermarkPosition = 'Diagonal'; // e.g Diagonal, TopLeft, TopCenter, TopRight, BottomLeft, BottomCenter, BottomRight, 
