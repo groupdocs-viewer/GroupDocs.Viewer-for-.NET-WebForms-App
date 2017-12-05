@@ -7,7 +7,7 @@ namespace WebForm_Modern_UI
 {
     public class Global : System.Web.HttpApplication
     {
-        private static string _licensePath = "D:\\GroupDocs.Total.lic";
+        private static string _licensePath = "D:\\License\\GroupDocs.Total.lic";
         protected void Application_Start(object sender, EventArgs e)
         {
             RouteTable.Routes.MapHttpRoute(

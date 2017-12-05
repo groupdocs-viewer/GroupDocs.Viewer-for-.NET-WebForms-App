@@ -14,8 +14,8 @@ namespace WebForm_Modern_UI.Controllers
 
     public class DownloadPdfController : ApiController
     {
-    
-        public HttpResponseMessage Get(string file, string watermarkText, int? watermarkColor, WatermarkPosition? watermarkPosition, int? watermarkWidth, byte watermarkOpacity)
+
+        public HttpResponseMessage Get(string file, string watermarkText, int? watermarkColor, WatermarkPosition? watermarkPosition, int? watermarkWidth, byte watermarkOpacity, bool isdownload)
         {
             ViewerHtmlHandler handler = Utils.CreateViewerHtmlHandler();
 
@@ -38,13 +38,16 @@ namespace WebForm_Modern_UI.Controllers
                 {
                     Content = new ByteArrayContent(ms.ToArray())
                 };
-                result.Content.Headers.ContentDisposition =
-                    new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
-                    {
-                        FileName = Path.GetFileNameWithoutExtension(file) + ".pdf"
-                    };
-                result.Content.Headers.ContentType =
-                    new MediaTypeHeaderValue("application/pdf");
+
+                if (isdownload)
+                {
+                    result.Content.Headers.Add("content-disposition", "attachment; filename=" + Path.GetFileNameWithoutExtension(file) + ".pdf");
+                    result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                }
+                else
+                {
+                    result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+                }
 
                 return result;
             }
