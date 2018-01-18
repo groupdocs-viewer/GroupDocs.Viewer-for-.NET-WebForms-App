@@ -67,18 +67,17 @@
         <md-icon>rotate_left</md-icon>
         <md-tooltip>Rotate</md-tooltip>
       </md-button>
+                    <md-button class="md-icon-button" ng-click="showTabDialog($event)" ng-hide="ShowHideTools.IsFileSelection">
+          <md-icon md-menu-origin md-menu-align-target>library_books</md-icon>
+
+          <md-tooltip>File Manager</md-tooltip>
+        </md-button>
 
       <md-button ng-click="previousDocument()" class="md-icon-button" ng-disabled="!selectedFile" ng-hide="ShowHideTools.IsFileSelection">
         <md-icon>navigate_before</md-icon>
         <md-tooltip>Previous Document</md-tooltip>
       </md-button>
-      <div ng-controller="AvailableFilesController">
-        <md-select style="overflow:hidden; width:150px!important;" ng-model="selectedFile" placeholder="Please select a file" md-on-open="onOpen()" ng-hide="ShowHideTools.IsFileSelection">
-          <md-optgroup label="Available files">
-            <md-option ng-value="item" ng-click="onChange(item)" ng-repeat="item in list">{{ item }}</md-option>
-          </md-optgroup>
-        </md-select>
-      </div>
+      <span>{{ selectedFile }}      <md-tooltip>Current Selected File</md-tooltip></span>
       <md-button ng-click="nextDocument()" class="md-icon-button" ng-disabled="!selectedFile" ng-hide="ShowHideTools.IsFileSelection">
         <md-icon>navigate_next</md-icon>
         <md-tooltip>Next Document</md-tooltip>
@@ -119,6 +118,11 @@
         <md-content flex layout="row" md-scroll-y>
       <md-content flex id="content" class="md-padding" role="main">
         <div ng-controller="PagesController">
+<%--            <md-card ng-repeat="item in lstPagesHTML" ng-value="item">
+                <a name="page-view-{{$index + 1}}"></a>
+                <iframe iframe-set-dimensions-onload align="middle" src="#" allowTransparency="true" srcdoc="{{ item }}"></iframe>
+            </md-card>--%>
+
           <md-card ng-repeat="item in docInfo.pages">
             <a name="page-view-{{ item.number }}"></a>
             <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
@@ -129,10 +133,10 @@
               <iframe ng-src="{{ createAttachmentPageUrl(selectedFile,attachment.name,number) }}" frameborder="0" allowTransparency="true"></iframe>
             </md-card>
           </div>
-
-        </div>
-      </md-content>
-      <md-sidenav md-component-id="left" hide-print md-whiteframe="4" class="md-sidenav-left">
+    </div>
+    </md-content>
+     
+    <md-sidenav md-component-id="left" hide-print md-whiteframe="4" class="md-sidenav-left">
         <md-tabs md-dynamic-height md-border-bottom>
           <md-tab label="Thumbnails">
             <md-content role="navigation">
@@ -201,6 +205,82 @@
         </md-button>
       </md-toolbar>
         </footer>
+        <div style="visibility: hidden">
+            <div class="md-dialog-container" id="fuDialog">
+                <md-dialog aria-label="File Manager">
+            <md-toolbar>
+              <div class="md-toolbar-tools">
+                <h2><md-icon md-menu-origin md-menu-align-target>library_books</md-icon> File Manager</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                  <md-icon aria-label="Close dialog">close</md-icon>
+                </md-button>
+              </div>
+            </md-toolbar>
+            <md-dialog-content style="max-width:800px;max-height:810px; ">
+              <md-tabs md-dynamic-height md-border-bottom md-selected="tabselectedIndex">
+                <md-tab label="Upload">
+                  <md-content class="md-padding" style="min-width:500px;">
+                    <md-card>
+                      <md-card-title>
+                        <md-card-title-text><span class="md-headline"><md-icon md-menu-origin md-menu-align-target>file_upload</md-icon> Upload</span></md-card-title-text>
+                      </md-card-title>
+                      <md-card-title-media>
+
+                        <div ng-controller="ToolbarController">
+
+                          <div class="md-media-lg card-media md-padding">
+                            <input type="file" id="file" name="file" accept=".png,.gif,.jpeg,.bmp,.doc,.docx,.xls,.xlsx,.pdf" onchange="angular.element(this).scope().getFileDetails(this)" />
+
+                            <md-button class="md-raised md-primary" ng-click="uploadFiles()">
+                              <md-icon md-menu-origin md-menu-align-target>file_upload</md-icon>
+                              Upload
+                              <md-tooltip>Upload Selected File</md-tooltip>
+                            </md-button>
+                            <!--ADD A PROGRESS BAR ELEMENT.-->
+                            <p style="display: none" id="progress">
+                              <md-progress-linear md-mode="indeterminate" determinateValue="0" determinateValue2="0"></md-progress-linear>
+                            </p>
+
+                          </div>
+                        </div>
+                      </md-card-title-media>
+                    </md-card>
+                  </md-content>
+                </md-tab>
+                <md-tab label="Files">
+                  <md-content class="md-padding" style="min-width:500px;">
+                    <md-card>
+                      <md-card-title>
+                        <md-card-title-text><span class="md-headline"><md-icon md-menu-origin md-menu-align-target>storage</md-icon> Files</span></md-card-title-text>
+                      </md-card-title>
+                      <md-card-title-media>
+
+
+                        <div ng-controller="AvailableFilesController">
+                          <div class="md-media-lg card-media md-padding">
+                            <table id="filesList">
+                              <tr>
+                                <th align="center">#</th>
+                                <th>File Name</th>
+                              </tr>
+                              <tr ng-repeat="item in list" ng-value="item">
+                                <td align="center">{{$index + 1}}</td>
+                                <td><span class="fileLink" ng-click="onChange(item)">{{ item }}</span></td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+
+                      </md-card-title-media>
+                    </md-card>
+                  </md-content>
+                </md-tab>
+              </md-tabs>
+            </md-dialog-content>
+          </md-dialog>
+            </div>
+        </div>
 
     </div>
 </body>
