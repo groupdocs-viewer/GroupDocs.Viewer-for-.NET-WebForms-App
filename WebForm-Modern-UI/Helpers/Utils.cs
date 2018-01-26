@@ -39,7 +39,7 @@ namespace Viewer_Modren_UI.Helpers
             {
                 StoragePath = _storagePath,
                 CachePath = _cachePath,
-                UseCache = false
+                UseCache = true
             };
             return cfg;
         }

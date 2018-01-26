@@ -30,7 +30,8 @@ ngApp.value('ShowHideTools', {
     IsShowZooming: !ShowZooming,
     IsShowRotateImage: !ShowRotateImage,
     IsShowPagingPanel: !ShowPagingPanel,
-    IsShowDownloads: !ShowDownloads
+    IsShowDownloads: !ShowDownloads,
+    IsShowPrint: !ShowPrint
 });
 
 ngApp.factory('FilesFactory', function ($resource) {
@@ -51,7 +52,7 @@ ngApp.factory('DocumentPagesFactory', function ($resource) {
     });
 });
 
-ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $mdSidenav, isImage, Zoom, TotalPages, CurrentPage, Watermark, ShowHideTools, FilePath, $mdDialog, FilesFactory, tabselectedIndex) {
+ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $http, $window, $mdSidenav, isImage, Zoom, TotalPages, CurrentPage, Watermark, ShowHideTools, FilePath, $mdDialog, FilesFactory, tabselectedIndex) {
 
     $rootScope.tabselectedIndex = tabselectedIndex;
     $scope.showTabDialog = function (ev) {
@@ -163,7 +164,8 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         IsShowZooming: ShowHideTools.IsShowZooming,
         IsShowRotateImage: ShowHideTools.IsShowRotateImage,
         IsShowPagingPanel: ShowHideTools.IsShowPagingPanel,
-        IsShowDownloads: ShowHideTools.IsShowDownloads
+        IsShowDownloads: ShowHideTools.IsShowDownloads,
+        IsShowPrint: ShowHideTools.IsShowPrint
     };
 
     $scope.isImage = isImage;
@@ -235,6 +237,10 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         }
     };
 
+    $scope.nextSearch = function () {
+        NavigateNextSearch();
+    };
+
     $scope.previousDocument = function () {
         if ($rootScope.list.indexOf($rootScope.selectedFile) - 1 == -1) {
             $rootScope.$broadcast('selected-file-changed', $rootScope.list[$rootScope.list.length - 1]);
@@ -245,6 +251,7 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
     };
 
     $scope.navigatePage = function (options) {
+        alert("options: " + options);
         if ($rootScope.selectedFile) {
             TotalPages = parseInt(TotalDocumentPages);
             CurrentPage = parseInt(CurrentDocumentPage);
@@ -289,6 +296,146 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
 
             CurrentDocumentPage = parseInt(CurrentPage);
             UpdatePager();
+        }
+    };
+
+    $scope.printPdf = function (isOriginal) {
+        var watermarkText = Watermark.Text;
+        if (isOriginal) {
+            watermarkText = '';
+        }
+        //var documentUrl = '/downloadpdf?file=' + $rootScope.selectedFile + '&watermarkText=' + watermarkText + '&watermarkColor=' + Watermark.Color + '&watermarkPosition=' + Watermark.Position + '&watermarkWidth=' + Watermark.Width + '&watermarkOpacity=' + Watermark.Opacity + '&isdownload=false';
+        var documentUrl = '/printablehtmlpdf?file=' + $rootScope.selectedFile + '&watermarkText=' + watermarkText + '&watermarkColor=' + Watermark.Color + '&watermarkPosition=' + Watermark.Position + '&watermarkWidth=' + Watermark.Width + '&watermarkOpacity=' + Watermark.Opacity + '&isdownload=false';
+
+        //var isWindowLoaded = false;
+        //var printwWindow = window.open(documentUrl);
+        //if (printwWindow) {
+        //    printwWindow.print();
+        //    printwWindow.close();
+
+        //    //printwWindow.onload = function () {
+        //    //    console.log('isWindowLoaded 1: ' + isWindowLoaded);
+        //    //    isWindowLoaded = true;
+        //    //    console.log('isWindowLoaded 2: ' + isWindowLoaded);
+        //    //};
+        //}
+        //console.log('isWindowLoaded 3: ' + isWindowLoaded);
+        //if (isWindowLoaded) {
+        //    console.log('isWindowLoaded 4: ' + isWindowLoaded);
+        //    printwWindow.print();
+        //    printwWindow.close();
+        //}
+
+        $http({
+            method: 'GET',
+            url: documentUrl
+        }).then(function (success) {
+            console.log('success.data: ' + success.data);
+
+            var w = window.open();
+            w.document.write(success.data);
+            w.print();
+            w.close();
+            //var printwWindow = window.open(success.data);
+            //printwWindow.print();
+            //printwWindow.close();
+        }, function (error) {
+
+        });
+
+        //$http.get(documentUrl, {}).then(function (success){
+        //    if (data != null) {
+        //        var printwWindow = window.open(data);
+        //        printwWindow.print();
+        //        printwWindow.close();
+        //    }
+        //}).error(function (msg, code) {
+        //    console.log(msg + '_' + code);
+        //});
+
+        //$http({
+        //    method: 'GET',
+        //    url: documentUrl,
+        //    headers: {
+        //        'Content-type': 'application/pdf'
+        //    },
+        //    responseType: 'arraybuffer'
+        //}).then(function (success) {
+        //    console.log('success: ' + success);
+        //    console.log('success.data: ' + success.data);
+        //    var pdfFile = new Blob([success.data], {
+        //        type: 'application/pdf'
+        //    });
+        //    var pdfUrl = URL.createObjectURL(pdfFile);
+        //    var isWindowLoaded = false;
+        //    console.log('isWindowLoaded: ' + isWindowLoaded);
+        //    if (pdfUrl) {
+        //        var printwWindow = $window.open(pdfUrl);
+        //        if (printwWindow) {
+        //            //isWindowLoaded = true;
+        //            printwWindow.onload = function (e) {
+        //                //console.log('isWindowLoaded 1: ' + isWindowLoaded);
+        //                isWindowLoaded = true;
+        //                //console.log('isWindowLoaded 2: ' + isWindowLoaded);
+        //            };
+        //        }
+        //    }
+        //    if (isWindowLoaded) {
+        //        //console.log('isWindowLoaded 3: ' + isWindowLoaded);
+        //        printwWindow.print();
+        //        printwWindow.close();
+        //    }
+
+        //}, function (error) {
+        //    console.log('error: ' + error);
+        //    console.log('Sorry, something went wrong');
+        //});
+
+        //$http({
+        //    url: documentUrl,
+        //    method: 'GET',
+        //    headers: {
+        //        'Content-type': 'application/pdf'
+        //    },
+        //    responseType: 'arraybuffer'
+        //}).success(function (data, status, headers, config) {
+        //    console.log('data: ' + data);
+        //    var pdfFile = new Blob([data], {
+        //        type: 'application/pdf'
+        //    });
+        //    var pdfUrl = URL.createObjectURL(pdfFile);
+        //    var printwWindow = $window.open(pdfUrl);
+        //    printwWindow.print();
+        //}).error(function (data, status, headers, config) {
+        //    console.log('Sorry, something went wrong');
+        //    //alert('Sorry, something went wrong')
+        //});
+
+        //$http.get(documentUrl).then(successCallback, errorCallback);
+
+        //function successCallback(response) {
+        //    console.log('response: ' + response);
+        //    console.log('response.data: ' + response.data);
+        //    var pdfFile = new Blob([response.data], {
+        //        type: 'application/pdf'
+        //    });
+        //    var pdfUrl = URL.createObjectURL(pdfFile);
+        //    var printwWindow = $window.open(pdfUrl);
+        //    printwWindow.print();
+
+        //    //var printwWindow = window.open(response);
+        //    //printwWindow.print();
+        //    //printwWindow.close();
+        //}
+        //function errorCallback(error) {
+        //    console.log('error: ' + error);
+        //    console.log('error.msg: ' + error.msg);
+        //}
+    };
+
+    $scope.navigateSearch = function () {
+        if ($rootScope.selectedFile) {
+            searchText();
         }
     };
 });
@@ -369,11 +516,11 @@ ngApp.factory('PagesHtmlFactory', function ($resource, $rootScope, Watermark, Fi
                         + '&watermarkPosition=' + Watermark.Position
                         + '&watermarkWidth=' + Watermark.Width
                         + '&watermarkOpacity=' + Watermark.Opacity, {
-        query: {
-            method: 'GET',
-            isArray: true
-        }
-    });
+                            query: {
+                                method: 'GET',
+                                isArray: true
+                            }
+                        });
 });
 
 ngApp.controller('PagesController',

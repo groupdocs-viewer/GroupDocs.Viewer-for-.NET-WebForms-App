@@ -19,11 +19,14 @@ var ShowImageToggle = true;
 var ShowZooming = true;
 var ShowRotateImage = true;
 var ShowDownloads = true;
+var ShowPrint = true;
 var ShowFileSelection = true;
 var ShowThubmnailPanel = true;
 var ShowPagingPanel = true;
 var TotalDocumentPages = 0;
 var CurrentDocumentPage = 1;
+var PreviousSearchText = '';
+var CurrentSearchIndex = 0;
 
 function resizeIFrame() {
 
@@ -114,6 +117,66 @@ function UpdatePager() {
                 if (i == CurrentDocumentPage) {
                     element[0].className = 'selectedthumbnail';
                 }
+            }
+        }
+    }
+}
+
+function searchText() {
+    CurrentSearchIndex = 0;
+    var search = document.getElementById("searchBox").value;
+    var iframes = document.querySelectorAll("iframe");
+
+    for (var i = 0; i < iframes.length; i++) {
+        var iframe = iframes[i].contentDocument.body;
+
+        var result = new RegExp('<span class="search-highlight" style="background-color: lime;">' + PreviousSearchText + '</span>', 'gi');
+
+        iframe.innerHTML = iframe.innerHTML.replace(result, PreviousSearchText);
+
+        result = new RegExp('<span class="search-highlight" style="background-color: red;">' + PreviousSearchText + '</span>', 'gi');
+
+        iframe.innerHTML = iframe.innerHTML.replace(result, PreviousSearchText);
+
+        if (search.length > 2) {
+            PreviousSearchText = search;
+            result = new RegExp(search, 'gi');
+            iframe.innerHTML = iframe.innerHTML.replace(result, '<span class="search-highlight" style="background-color: lime;">' + search + '</span>');
+        }
+    }
+}
+
+function NavigateNextSearch() {
+    var iframes = document.querySelectorAll("iframe");
+    var highlightspanscount = 0;
+    for (var i = 0; i < iframes.length; i++) {
+        var lstHighlightedSpans = [];
+        lstHighlightedSpans = iframes[i].contentWindow.document.querySelectorAll(".search-highlight");
+        if (lstHighlightedSpans.length > 0) {
+            highlightspanscount += lstHighlightedSpans.length;
+
+            console.log("CurrentSearchIndex > highlightspanscount: i: lstHighlightedSpans.length: " + CurrentSearchIndex + " > " + highlightspanscount + " : " + i + " : " + lstHighlightedSpans.length);
+            if (CurrentSearchIndex < highlightspanscount) {
+                CurrentSearchIndex += 1;
+                if (CurrentSearchIndex < lstHighlightedSpans.length) {
+                    lstHighlightedSpans[CurrentSearchIndex - 1].style.backgroundColor = "lime";
+                    lstHighlightedSpans[CurrentSearchIndex].style.backgroundColor = "red";
+                    lstHighlightedSpans[CurrentSearchIndex].focus();
+                    break;
+                }
+                else {
+                    lstHighlightedSpans[CurrentSearchIndex - (lstHighlightedSpans.length - 1)].style.backgroundColor = "lime";
+                    lstHighlightedSpans[CurrentSearchIndex - (lstHighlightedSpans.length)].style.backgroundColor = "red";
+                    lstHighlightedSpans[CurrentSearchIndex - (lstHighlightedSpans.length)].focus();
+                    break;
+                }
+            }
+            else if (highlightspanscount > CurrentSearchIndex) {
+                lstHighlightedSpans[CurrentSearchIndex - (lstHighlightedSpans.length - 2)].style.backgroundColor = "lime";
+                CurrentSearchIndex += 1;
+                lstHighlightedSpans[CurrentSearchIndex - (lstHighlightedSpans.length - 1)].style.backgroundColor = "red";
+                lstHighlightedSpans[CurrentSearchIndex - (lstHighlightedSpans.length - 1)].focus();
+                break;
             }
         }
     }

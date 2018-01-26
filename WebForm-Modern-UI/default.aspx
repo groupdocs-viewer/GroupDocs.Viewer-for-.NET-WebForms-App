@@ -30,6 +30,7 @@
         //ShowImageToggle = false;
         //ShowZooming = false;
         //ShowDownloads = false;
+        //ShowPrint = false;
         //ShowFileSelection = false;
         //ShowThubmnailPanel = false;
         //ShowPagingPanel = false;
@@ -67,9 +68,13 @@
         <md-icon>rotate_left</md-icon>
         <md-tooltip>Rotate</md-tooltip>
       </md-button>
+          <input id="searchBox" my-enter="navigateSearch()" value="" placeholder="search..." class="input_search" />
+            <md-button ng-click="nextSearch()" class="md-icon-button" ng-disabled="!selectedFile" ng-hide="ShowHideTools.IsFileSelection">
+        <md-icon>navigate_next</md-icon>
+        <md-tooltip>Next Search</md-tooltip>
+      </md-button>
                     <md-button class="md-icon-button" ng-click="showTabDialog($event)" ng-hide="ShowHideTools.IsFileSelection">
           <md-icon md-menu-origin md-menu-align-target>library_books</md-icon>
-
           <md-tooltip>File Manager</md-tooltip>
         </md-button>
 
@@ -82,7 +87,7 @@
         <md-icon>navigate_next</md-icon>
         <md-tooltip>Next Document</md-tooltip>
       </md-button>
-      <md-menu ng-hide="ShowHideTools.IsShowDownloads">
+                  <md-menu ng-hide="ShowHideTools.IsShowDownloads">
         <md-button class="md-icon-button" ng-click="this.openMenu($mdOpenMenu, $event)">
           <md-icon>file_download</md-icon>
           <md-tooltip>Download Document</md-tooltip>
@@ -107,7 +112,26 @@
               <md-icon md-menu-origin md-menu-align-target>file_download</md-icon>
               Download Original
             </md-button>
-
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+      <md-menu ng-hide="ShowHideTools.IsShowPrint">
+        <md-button class="md-icon-button" ng-click="this.openMenu($mdOpenMenu, $event)">
+          <md-icon>print</md-icon>
+          <md-tooltip>Print Document</md-tooltip>
+        </md-button>
+        <md-menu-content width="4">
+          <md-menu-item ng-hide="ShowHideTools.IsShowPrint">
+            <md-button ng-click="printPdf(false)" ng-disabled="!selectedFile">
+              <md-icon md-menu-origin md-menu-align-target>print</md-icon>
+              Print Document
+            </md-button>
+          </md-menu-item>
+          <md-menu-item ng-hide="ShowHideTools.IsShowPrint">
+            <md-button ng-click="printPdf(true)" ng-disabled="!selectedFile">
+              <md-icon md-menu-origin md-menu-align-target>print</md-icon>
+              Print Original Document
+            </md-button>
           </md-menu-item>
         </md-menu-content>
       </md-menu>
@@ -127,12 +151,12 @@
             <a name="page-view-{{ item.number }}"></a>
             <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
           </md-card>
-          <div ng-repeat="attachment in docInfo.attachments">
+<%--          <div ng-repeat="attachment in docInfo.attachments">
             <md-card ng-repeat="number in attachment.count">
               <a name="page-view-{{attachment.name}}-{{number}}"></a>
               <iframe ng-src="{{ createAttachmentPageUrl(selectedFile,attachment.name,number) }}" frameborder="0" allowTransparency="true"></iframe>
             </md-card>
-          </div>
+          </div>--%>
     </div>
     </md-content>
      
