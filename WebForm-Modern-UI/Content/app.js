@@ -241,6 +241,10 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         NavigateNextSearch();
     };
 
+    $scope.previousSearch = function () {
+        NavigatePreviousSearch();
+    };
+
     $scope.previousDocument = function () {
         if ($rootScope.list.indexOf($rootScope.selectedFile) - 1 == -1) {
             $rootScope.$broadcast('selected-file-changed', $rootScope.list[$rootScope.list.length - 1]);
@@ -251,7 +255,6 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
     };
 
     $scope.navigatePage = function (options) {
-        alert("options: " + options);
         if ($rootScope.selectedFile) {
             TotalPages = parseInt(TotalDocumentPages);
             CurrentPage = parseInt(CurrentDocumentPage);
@@ -304,133 +307,26 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         if (isOriginal) {
             watermarkText = '';
         }
-        //var documentUrl = '/downloadpdf?file=' + $rootScope.selectedFile + '&watermarkText=' + watermarkText + '&watermarkColor=' + Watermark.Color + '&watermarkPosition=' + Watermark.Position + '&watermarkWidth=' + Watermark.Width + '&watermarkOpacity=' + Watermark.Opacity + '&isdownload=false';
         var documentUrl = '/printablehtmlpdf?file=' + $rootScope.selectedFile + '&watermarkText=' + watermarkText + '&watermarkColor=' + Watermark.Color + '&watermarkPosition=' + Watermark.Position + '&watermarkWidth=' + Watermark.Width + '&watermarkOpacity=' + Watermark.Opacity + '&isdownload=false';
-
-        //var isWindowLoaded = false;
-        //var printwWindow = window.open(documentUrl);
-        //if (printwWindow) {
-        //    printwWindow.print();
-        //    printwWindow.close();
-
-        //    //printwWindow.onload = function () {
-        //    //    console.log('isWindowLoaded 1: ' + isWindowLoaded);
-        //    //    isWindowLoaded = true;
-        //    //    console.log('isWindowLoaded 2: ' + isWindowLoaded);
-        //    //};
-        //}
-        //console.log('isWindowLoaded 3: ' + isWindowLoaded);
-        //if (isWindowLoaded) {
-        //    console.log('isWindowLoaded 4: ' + isWindowLoaded);
-        //    printwWindow.print();
-        //    printwWindow.close();
-        //}
 
         $http({
             method: 'GET',
             url: documentUrl
         }).then(function (success) {
-            console.log('success.data: ' + success.data);
 
-            var w = window.open();
-            w.document.write(success.data);
-            w.print();
-            w.close();
-            //var printwWindow = window.open(success.data);
-            //printwWindow.print();
-            //printwWindow.close();
+            var printWindow = $window.open('', '_blank', '', '');
+            if (printWindow) {
+                printWindow.onload = function (e) {
+
+                }
+
+                printWindow.document.write(success.data);
+                printWindow.print();
+                printWindow.close();
+            }
         }, function (error) {
-
+            console.log('error: ' + error);
         });
-
-        //$http.get(documentUrl, {}).then(function (success){
-        //    if (data != null) {
-        //        var printwWindow = window.open(data);
-        //        printwWindow.print();
-        //        printwWindow.close();
-        //    }
-        //}).error(function (msg, code) {
-        //    console.log(msg + '_' + code);
-        //});
-
-        //$http({
-        //    method: 'GET',
-        //    url: documentUrl,
-        //    headers: {
-        //        'Content-type': 'application/pdf'
-        //    },
-        //    responseType: 'arraybuffer'
-        //}).then(function (success) {
-        //    console.log('success: ' + success);
-        //    console.log('success.data: ' + success.data);
-        //    var pdfFile = new Blob([success.data], {
-        //        type: 'application/pdf'
-        //    });
-        //    var pdfUrl = URL.createObjectURL(pdfFile);
-        //    var isWindowLoaded = false;
-        //    console.log('isWindowLoaded: ' + isWindowLoaded);
-        //    if (pdfUrl) {
-        //        var printwWindow = $window.open(pdfUrl);
-        //        if (printwWindow) {
-        //            //isWindowLoaded = true;
-        //            printwWindow.onload = function (e) {
-        //                //console.log('isWindowLoaded 1: ' + isWindowLoaded);
-        //                isWindowLoaded = true;
-        //                //console.log('isWindowLoaded 2: ' + isWindowLoaded);
-        //            };
-        //        }
-        //    }
-        //    if (isWindowLoaded) {
-        //        //console.log('isWindowLoaded 3: ' + isWindowLoaded);
-        //        printwWindow.print();
-        //        printwWindow.close();
-        //    }
-
-        //}, function (error) {
-        //    console.log('error: ' + error);
-        //    console.log('Sorry, something went wrong');
-        //});
-
-        //$http({
-        //    url: documentUrl,
-        //    method: 'GET',
-        //    headers: {
-        //        'Content-type': 'application/pdf'
-        //    },
-        //    responseType: 'arraybuffer'
-        //}).success(function (data, status, headers, config) {
-        //    console.log('data: ' + data);
-        //    var pdfFile = new Blob([data], {
-        //        type: 'application/pdf'
-        //    });
-        //    var pdfUrl = URL.createObjectURL(pdfFile);
-        //    var printwWindow = $window.open(pdfUrl);
-        //    printwWindow.print();
-        //}).error(function (data, status, headers, config) {
-        //    console.log('Sorry, something went wrong');
-        //    //alert('Sorry, something went wrong')
-        //});
-
-        //$http.get(documentUrl).then(successCallback, errorCallback);
-
-        //function successCallback(response) {
-        //    console.log('response: ' + response);
-        //    console.log('response.data: ' + response.data);
-        //    var pdfFile = new Blob([response.data], {
-        //        type: 'application/pdf'
-        //    });
-        //    var pdfUrl = URL.createObjectURL(pdfFile);
-        //    var printwWindow = $window.open(pdfUrl);
-        //    printwWindow.print();
-
-        //    //var printwWindow = window.open(response);
-        //    //printwWindow.print();
-        //    //printwWindow.close();
-        //}
-        //function errorCallback(error) {
-        //    console.log('error: ' + error);
-        //    console.log('error.msg: ' + error.msg);
-        //}
     };
 
     $scope.navigateSearch = function () {
@@ -455,7 +351,6 @@ ngApp.controller('ThumbnailsController',
             $scope.docInfo = DocumentPagesFactory.query({
                 filename: selectedFile
             });
-
         });
         $scope.$on('md-sidenav-toggle-complete', function ($event, component) {
             $scope.isLeftSidenavVislble = component.isOpen();
@@ -473,10 +368,14 @@ ngApp.controller('ThumbnailsController',
             });
         };
 
-        $scope.onAttachmentThumbnailClick = function ($event, name, number) {
+        $scope.onAttachmentThumbnailClick = function ($event, name, number, attachment) {
             $mdSidenav('left').toggle().then(function () {
-                location.hash = 'page-view-' + name + '-' + number;
+                $scope.CurrentPage = parseInt(number);
+                CurrentDocumentPage = $scope.CurrentPage;
+                UpdatePager();
+                location.hash = 'page-view-' + number;
                 $rootScope.$broadcast('md-sidenav-toggle-complete', $mdSidenav('left'));
+                $scope.selected = attachment;
             });
         };
         $scope.createThumbnailUrl = function (selectedFile, itemNumber) {
@@ -651,82 +550,14 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
                     }
                 }
 
-                var iframes = document.querySelectorAll("iframe");
-
-                TotalDocumentPages = parseInt(iframes.length);
-
                 UpdatePager();
             });
         }
     }
 }]);
 
-//ngApp.directive('cardSetDimensions', function ($window) {
-//    return {
-//        link: function ($scope, element, attrs) {
-
-//            ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
-//            ZoomValue = (ZoomValue <= 0.05 ? 0.05 : ZoomValue);
-//            ZoomValue = (ZoomValue >= 6 ? 6 : ZoomValue);
-
-//            var body = element[0].contentWindow.document.body,
-//                        html = element[0].contentWindow.document.documentElement,
-//                        height = Math.max(
-//                            body.scrollHeight,
-//                            body.offsetHeight,
-//                            html.clientHeight,
-//                            html.scrollHeight,
-//                            html.offsetHeight
-//                    );
-
-//            height = parseInt(height) + 50;
-//            height = (height * (parseFloat(ZoomValue) < 1 ? 1 : parseFloat(ZoomValue)));
-//            height = parseInt(height);
-//            height = parseInt(height) + 10;
-
-//            if (ZoomValue > 1) {
-//                element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -moz-transform-origin: 0 0; -o-transform: scale(" + ZoomValue + "); -o-transform-origin: 0 0; -webkit-transform: scale(" + ZoomValue + "); -webkit-transform-origin: 0 0; height:" + height + "px !important; width:100%!important; overflow: visible !important;";
-//            }
-//            else {
-//                element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -o-transform: scale(" + ZoomValue + "); -webkit-transform: scale(" + ZoomValue + "); height:" + height + "px !important; width:100%!important; overflow: visible !important;";
-//            }
-
-//            //if (ZoomValue > 1) {
-//            //    element.css("zoom", ZoomValue);
-//            //    element.css("-moz-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-moz-transform-origin", "0 0");
-//            //    element.css("-o-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-o-transform-origin", "0 0");
-//            //    element.css("-webkit-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-webkit-transform-origin", "0 0");
-//            //    element.css("height", height + "px");
-//            //    element.css("width", "100%");
-//            //    element.css("overflow", "visible");
-//            //}
-//            //else {
-//            //    element.css("zoom", ZoomValue);
-//            //    element.css("-moz-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-o-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-webkit-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("height", height + "px");
-//            //    element.css("width", "100%");
-//            //    element.css("overflow", "visible");
-//            //}
-//        }
-//    }
-//});
-
 ngApp.controller('AvailableFilesController', function AvailableFilesController($rootScope, $scope, FilesFactory, DocumentPagesFactory, FilePath, $mdDialog) {
     $rootScope.list = FilesFactory.query();
-
-    //if (FilePath) {
-    //    $rootScope.list = [FilePath];
-    //    $rootScope.selectedFile = $rootScope.list[0];
-    //    $rootScope.$broadcast('selected-file-changed', $rootScope.selectedFile);
-    //    $scope.docInfo = DocumentPagesFactory.query({
-    //        filename: FilePath
-    //    });
-    //}
 
     $scope.onOpen = function () {
         $rootScope.list = FilesFactory.query();

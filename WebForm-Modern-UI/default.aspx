@@ -68,10 +68,15 @@
         <md-icon>rotate_left</md-icon>
         <md-tooltip>Rotate</md-tooltip>
       </md-button>
-          <input id="searchBox" my-enter="navigateSearch()" value="" placeholder="search..." class="input_search" />
-            <md-button ng-click="nextSearch()" class="md-icon-button" ng-disabled="!selectedFile" ng-hide="ShowHideTools.IsFileSelection">
-        <md-icon>navigate_next</md-icon>
-        <md-tooltip>Next Search</md-tooltip>
+         <md-button ng-click="nextSearch()"  ng-disabled="isImage" class="md-icon-button" ng-disabled="!selectedFile" ng-hide="ShowHideTools.IsFileSelection">
+        <md-icon>keyboard_arrow_down</md-icon>
+        <md-tooltip>Search Downward</md-tooltip>
+      </md-button>
+             <input id="searchBox" ng-disabled="isImage" my-enter="navigateSearch()" value="" placeholder="search..." class="input_search" />
+            
+            <md-button ng-click="previousSearch()" ng-disabled="isImage" class="md-icon-button" ng-disabled="!selectedFile" ng-hide="ShowHideTools.IsFileSelection">
+        <md-icon>keyboard_arrow_up</md-icon>
+        <md-tooltip>Search Upward</md-tooltip>
       </md-button>
                     <md-button class="md-icon-button" ng-click="showTabDialog($event)" ng-hide="ShowHideTools.IsFileSelection">
           <md-icon md-menu-origin md-menu-align-target>library_books</md-icon>
@@ -139,8 +144,8 @@
         <md-icon>more_vert</md-icon>
       </md-button>
     </md-toolbar>
-        <md-content flex layout="row" md-scroll-y>
-      <md-content flex id="content" class="md-padding" role="main">
+        <md-content flex layout="row">
+      <md-content flex id="content" md-scroll-xy class="md-padding" role="main">
         <div ng-controller="PagesController">
 <%--            <md-card ng-repeat="item in lstPagesHTML" ng-value="item">
                 <a name="page-view-{{$index + 1}}"></a>
@@ -151,12 +156,10 @@
             <a name="page-view-{{ item.number }}"></a>
             <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
           </md-card>
-<%--          <div ng-repeat="attachment in docInfo.attachments">
-            <md-card ng-repeat="number in attachment.count">
-              <a name="page-view-{{attachment.name}}-{{number}}"></a>
-              <iframe ng-src="{{ createAttachmentPageUrl(selectedFile,attachment.name,number) }}" frameborder="0" allowTransparency="true"></iframe>
+          <md-card ng-repeat="attachment in docInfo.attachments">
+            <a name="page-view-{{$index + 2}}"></a>
+              <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createAttachmentPageUrl(selectedFile,attachment.name,1) }}" allowTransparency="true"></iframe>
             </md-card>
-          </div>--%>
     </div>
     </md-content>
      
@@ -168,11 +171,9 @@
                 <md-card ng-repeat="item in docInfo.pages" class="thumbnail">
                   <img name="imghumb-{{ item.number }}" ng-class="{selectedthumbnail: item === selected}" ng-src="{{ createThumbnailUrl(selectedFile, item.number) }}" ng-click="onThumbnailClick($event, item)" class="md-card-image page-thumbnail" />
                 </md-card>
-                <div ng-repeat="attachment in docInfo.attachments">
-                  <md-card ng-repeat="number in  attachment.count">
-                    <img ng-src="{{  createAttachmentThumbnailPageUrl(selectedFile,attachment.name,number) }}" ng-click="onAttachmentThumbnailClick($event,attachment.name,number)" class="md-card-image page-thumbnail" />
-                  </md-card>
-                </div>
+                <md-card ng-repeat="attachment in docInfo.attachments">
+                    <img name="imghumb-{{ $index+2 }}" ng-class="{selectedthumbnail: attachment === selected}" ng-src="{{  createAttachmentThumbnailPageUrl(selectedFile,attachment.name,1) }}" ng-click="onAttachmentThumbnailClick($event,attachment.name,$index+2,attachment)" class="md-card-image page-thumbnail" />
+                </md-card>
               </div>
             </md-content>
           </md-tab>
@@ -254,7 +255,7 @@
                         <div ng-controller="ToolbarController">
 
                           <div class="md-media-lg card-media md-padding">
-                            <input type="file" id="file" name="file" accept=".png,.gif,.jpeg,.bmp,.doc,.docx,.xls,.xlsx,.pdf" onchange="angular.element(this).scope().getFileDetails(this)" />
+                            <input type="file" id="file" name="file" accept=".png,.gif,.jpeg,.bmp,.doc,.docx,.xls,.xlsx,.pdf,.msg" onchange="angular.element(this).scope().getFileDetails(this)" />
 
                             <md-button class="md-raised md-primary" ng-click="uploadFiles()">
                               <md-icon md-menu-origin md-menu-align-target>file_upload</md-icon>
