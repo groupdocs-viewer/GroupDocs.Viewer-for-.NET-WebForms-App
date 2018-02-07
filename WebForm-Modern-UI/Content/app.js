@@ -2,6 +2,7 @@
 
 var ngApp = angular.module('GroupDocsViewer', ['ngMaterial', 'ngResource']);
 ngApp.value('FilePath', DefaultFilePath);
+ngApp.value('tabselectedIndex', 0);
 ngApp.value('isImage', isImageToggle);
 ngApp.value('Rotate', RotateAngel);
 
@@ -29,7 +30,8 @@ ngApp.value('ShowHideTools', {
     IsShowZooming: !ShowZooming,
     IsShowRotateImage: !ShowRotateImage,
     IsShowPagingPanel: !ShowPagingPanel,
-    IsShowDownloads: !ShowDownloads
+    IsShowDownloads: !ShowDownloads,
+    IsShowPrint: !ShowPrint
 });
 
 ngApp.factory('FilesFactory', function ($resource) {
@@ -50,7 +52,86 @@ ngApp.factory('DocumentPagesFactory', function ($resource) {
     });
 });
 
-ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $mdSidenav, isImage, Zoom, TotalPages, CurrentPage, Watermark, ShowHideTools, FilePath) {
+ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $http, $window, $mdSidenav, isImage, Zoom, TotalPages, CurrentPage, Watermark, ShowHideTools, FilePath, $mdDialog, FilesFactory, tabselectedIndex) {
+
+    $rootScope.tabselectedIndex = tabselectedIndex;
+    $scope.showTabDialog = function (ev) {
+        $mdDialog.show({
+            controller: DialogController,
+            contentElement: '#fuDialog',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: true
+        })
+            .then(function (answer) {
+                $scope.status = 'You said the information was "' + answer + '".';
+            }, function () {
+                $scope.status = 'You cancelled the dialog.';
+            });
+    };
+
+    function DialogController($scope, $mdDialog) {
+        $scope.hide = function () {
+            $mdDialog.hide();
+        };
+        $scope.cancel = function () {
+            $mdDialog.cancel();
+        };
+        $scope.answer = function (answer) {
+            $mdDialog.hide(answer);
+        };
+    };
+
+    $scope.getFileDetails = function (e) {
+
+        $scope.files = [];
+        $scope.$apply(function () {
+            for (var i = 0; i < e.files.length; i++) {
+                $scope.files.push(e.files[i])
+            }
+
+        });
+    };
+
+    $scope.uploadFiles = function () {
+        var data = new FormData();
+
+        if ($scope.files != undefined) {
+
+            for (var i in $scope.files) {
+                data.append("uploadedFile", $scope.files[i]);
+            }
+
+            var objXhr = new XMLHttpRequest();
+            objXhr.addEventListener("progress", updateProgress, false);
+            objXhr.addEventListener("load", transferComplete, false);
+
+            objXhr.open("POST", "/fileUpload/");
+            objXhr.send(data);
+            document.getElementById('progress').style.display = 'block';
+            $scope.files = undefined;
+        }
+        else {
+            alert("Please select file to upload.");
+        }
+    };
+
+    function updateProgress(e) {
+        if (e.lengthComputable) {
+            document.getElementById('progress').style.display = 'block';
+            document.getElementById('progress').setAttribute('max', e.total);
+        }
+    };
+
+    function transferComplete(e) {
+        $rootScope.list = FilesFactory.query();
+        alert("Files uploaded successfully.");
+        document.getElementById('progress').style.display = 'none';
+        $rootScope.tabselectedIndex = 1;
+    };
+
+    $scope.uploadedFile = {};
+    $scope.uploadedFile.name = "";
 
     $scope.toggleLeft = function () {
         $mdSidenav('left').toggle().then(function () {
@@ -83,7 +164,8 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         IsShowZooming: ShowHideTools.IsShowZooming,
         IsShowRotateImage: ShowHideTools.IsShowRotateImage,
         IsShowPagingPanel: ShowHideTools.IsShowPagingPanel,
-        IsShowDownloads: ShowHideTools.IsShowDownloads
+        IsShowDownloads: ShowHideTools.IsShowDownloads,
+        IsShowPrint: ShowHideTools.IsShowPrint
     };
 
     $scope.isImage = isImage;
@@ -155,6 +237,14 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         }
     };
 
+    $scope.nextSearch = function () {
+        NavigateNextSearch();
+    };
+
+    $scope.previousSearch = function () {
+        NavigatePreviousSearch();
+    };
+
     $scope.previousDocument = function () {
         if ($rootScope.list.indexOf($rootScope.selectedFile) - 1 == -1) {
             $rootScope.$broadcast('selected-file-changed', $rootScope.list[$rootScope.list.length - 1]);
@@ -211,6 +301,39 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
             UpdatePager();
         }
     };
+
+    $scope.printPdf = function (isOriginal) {
+        var watermarkText = Watermark.Text;
+        if (isOriginal) {
+            watermarkText = '';
+        }
+        var documentUrl = '/printablehtmlpdf?file=' + $rootScope.selectedFile + '&watermarkText=' + watermarkText + '&watermarkColor=' + Watermark.Color + '&watermarkPosition=' + Watermark.Position + '&watermarkWidth=' + Watermark.Width + '&watermarkOpacity=' + Watermark.Opacity + '&isdownload=false';
+
+        $http({
+            method: 'GET',
+            url: documentUrl
+        }).then(function (success) {
+
+            var printWindow = $window.open('', '_blank', '', '');
+            if (printWindow) {
+                printWindow.onload = function (e) {
+
+                }
+
+                printWindow.document.write(success.data);
+                printWindow.print();
+                printWindow.close();
+            }
+        }, function (error) {
+            console.log('error: ' + error);
+        });
+    };
+
+    $scope.navigateSearch = function () {
+        if ($rootScope.selectedFile) {
+            searchText();
+        }
+    };
 });
 
 ngApp.controller('ThumbnailsController',
@@ -228,7 +351,6 @@ ngApp.controller('ThumbnailsController',
             $scope.docInfo = DocumentPagesFactory.query({
                 filename: selectedFile
             });
-
         });
         $scope.$on('md-sidenav-toggle-complete', function ($event, component) {
             $scope.isLeftSidenavVislble = component.isOpen();
@@ -246,10 +368,14 @@ ngApp.controller('ThumbnailsController',
             });
         };
 
-        $scope.onAttachmentThumbnailClick = function ($event, name, number) {
+        $scope.onAttachmentThumbnailClick = function ($event, name, number, attachment) {
             $mdSidenav('left').toggle().then(function () {
-                location.hash = 'page-view-' + name + '-' + number;
+                $scope.CurrentPage = parseInt(number);
+                CurrentDocumentPage = $scope.CurrentPage;
+                UpdatePager();
+                location.hash = 'page-view-' + number;
                 $rootScope.$broadcast('md-sidenav-toggle-complete', $mdSidenav('left'));
+                $scope.selected = attachment;
             });
         };
         $scope.createThumbnailUrl = function (selectedFile, itemNumber) {
@@ -281,13 +407,29 @@ ngApp.controller('ThumbnailsController',
     }
 );
 
+ngApp.factory('PagesHtmlFactory', function ($resource, $rootScope, Watermark, FilePath) {
+    return $resource('/pageshtml?file='
+                        + FilePath + '&page=' + 1
+                        + '&watermarkText=' + Watermark.Text
+                        + '&watermarkColor=' + Watermark.Color
+                        + '&watermarkPosition=' + Watermark.Position
+                        + '&watermarkWidth=' + Watermark.Width
+                        + '&watermarkOpacity=' + Watermark.Opacity, {
+                            query: {
+                                method: 'GET',
+                                isArray: true
+                            }
+                        });
+});
+
 ngApp.controller('PagesController',
-    function ThumbnailsController($rootScope, $scope, $sce, $document, DocumentPagesFactory, FilePath, Watermark, ShowHideTools, isImage, Rotate, Zoom) {
+    function PagesController($rootScope, $scope, $sce, $document, DocumentPagesFactory, FilePath, Watermark, ShowHideTools, isImage, Rotate, Zoom, PagesHtmlFactory) {
         if (FilePath) {
             $rootScope.selectedFile = FilePath;
             $scope.docInfo = DocumentPagesFactory.query({
                 filename: FilePath
             });
+            $scope.lstPagesHTML = PagesHtmlFactory.query();
         }
 
         $scope.$on('selected-file-changed', function (event, selectedFile) {
@@ -408,87 +550,21 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
                     }
                 }
 
-                var iframes = document.querySelectorAll("iframe");
-
-                TotalDocumentPages = parseInt(iframes.length);
-
                 UpdatePager();
             });
         }
     }
 }]);
 
-//ngApp.directive('cardSetDimensions', function ($window) {
-//    return {
-//        link: function ($scope, element, attrs) {
-
-//            ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
-//            ZoomValue = (ZoomValue <= 0.05 ? 0.05 : ZoomValue);
-//            ZoomValue = (ZoomValue >= 6 ? 6 : ZoomValue);
-
-//            var body = element[0].contentWindow.document.body,
-//                        html = element[0].contentWindow.document.documentElement,
-//                        height = Math.max(
-//                            body.scrollHeight,
-//                            body.offsetHeight,
-//                            html.clientHeight,
-//                            html.scrollHeight,
-//                            html.offsetHeight
-//                    );
-
-//            height = parseInt(height) + 50;
-//            height = (height * (parseFloat(ZoomValue) < 1 ? 1 : parseFloat(ZoomValue)));
-//            height = parseInt(height);
-//            height = parseInt(height) + 10;
-
-//            if (ZoomValue > 1) {
-//                element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -moz-transform-origin: 0 0; -o-transform: scale(" + ZoomValue + "); -o-transform-origin: 0 0; -webkit-transform: scale(" + ZoomValue + "); -webkit-transform-origin: 0 0; height:" + height + "px !important; width:100%!important; overflow: visible !important;";
-//            }
-//            else {
-//                element[0].style = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -o-transform: scale(" + ZoomValue + "); -webkit-transform: scale(" + ZoomValue + "); height:" + height + "px !important; width:100%!important; overflow: visible !important;";
-//            }
-
-//            //if (ZoomValue > 1) {
-//            //    element.css("zoom", ZoomValue);
-//            //    element.css("-moz-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-moz-transform-origin", "0 0");
-//            //    element.css("-o-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-o-transform-origin", "0 0");
-//            //    element.css("-webkit-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-webkit-transform-origin", "0 0");
-//            //    element.css("height", height + "px");
-//            //    element.css("width", "100%");
-//            //    element.css("overflow", "visible");
-//            //}
-//            //else {
-//            //    element.css("zoom", ZoomValue);
-//            //    element.css("-moz-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-o-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("-webkit-transform", "scale(" + ZoomValue + ")");
-//            //    element.css("height", height + "px");
-//            //    element.css("width", "100%");
-//            //    element.css("overflow", "visible");
-//            //}
-//        }
-//    }
-//});
-
-ngApp.controller('AvailableFilesController', function AvailableFilesController($rootScope, $scope, FilesFactory, DocumentPagesFactory, FilePath) {
+ngApp.controller('AvailableFilesController', function AvailableFilesController($rootScope, $scope, FilesFactory, DocumentPagesFactory, FilePath, $mdDialog) {
     $rootScope.list = FilesFactory.query();
-    if (FilePath) {
-        $rootScope.list = [FilePath];
-        $rootScope.selectedFile = $rootScope.list[0];
-        $rootScope.$broadcast('selected-file-changed', $rootScope.selectedFile);
-        $scope.docInfo = DocumentPagesFactory.query({
-            filename: FilePath
-        });
-    }
 
     $scope.onOpen = function () {
         $rootScope.list = FilesFactory.query();
-
     };
+
     $scope.onChange = function (item) {
+        $mdDialog.hide();
         $rootScope.$broadcast('selected-file-changed', item);
     };
 

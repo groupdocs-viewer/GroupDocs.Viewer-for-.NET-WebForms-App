@@ -19,7 +19,7 @@ namespace Viewer_Modren_UI.Helpers
     public class Utils
     {
       
-        private static string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
+        public static string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
         private static string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\temp";
         private static string _cachePath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\cache";
         public static ViewerHtmlHandler CreateViewerHtmlHandler()
@@ -39,7 +39,7 @@ namespace Viewer_Modren_UI.Helpers
             {
                 StoragePath = _storagePath,
                 CachePath = _cachePath,
-                UseCache = false
+                UseCache = true
             };
             return cfg;
         }
