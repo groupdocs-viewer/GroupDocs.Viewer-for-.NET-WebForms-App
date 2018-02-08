@@ -13,12 +13,12 @@ ASP.NET WebForms Modern UI Document Viewer that supports many different formats 
 + Download OR Open Document
 + Display Emails Attachments and Emails Attachment's Thumbnails
 + Load File from URL
-+ Load Default File
++ Load Default Document
 + Browser & Upload File
 + Select File from Uploaded File List
 + Watermark Insertion to the Output Pages
-+ Toggle between HTML/Image Representation of File
-+ Rotate the Image Representation of File
++ Toggle between HTML/Image Representation of Document
++ Rotate the Image Representation of Document
 + Zooming in Image & HTML Representation
 + Paging in Image & HTML Representation
 + Search Text in HTML Representation
