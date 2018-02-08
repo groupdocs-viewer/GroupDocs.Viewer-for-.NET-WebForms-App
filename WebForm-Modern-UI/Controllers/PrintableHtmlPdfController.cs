@@ -27,9 +27,7 @@ namespace WebForm_Modern_UI.Controllers
                     o.Watermark = Utils.GetWatermark(watermarkText, watermarkColor, watermarkPosition, watermarkWidth, watermarkOpacity);
 
                 PrintableHtmlContainer container = handler.GetPrintableHtml(file, o);
-                //string filePath = Utils._storagePath + "\\" + Path.GetFileNameWithoutExtension(file) + "-Printable.html";
-                //File.WriteAllText(filePath, container.HtmlContent);
-                return container.HtmlContent;
+                return container.HtmlContent.Replace(".doc-page { position: absolute; }", ".doc-page { position: relative; }");
             }
             catch (Exception x)
             {
