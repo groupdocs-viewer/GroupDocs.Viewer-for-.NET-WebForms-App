@@ -2,7 +2,7 @@
 ///// DYNAMIC CONFIGURATIONS PARAMETERS WITH DEFAULT VALUES
 ///// ***************************************************** //////
 
-// All veriables are utilized in Index.cshtml & app.js files.
+// All veriables are utilized in default.aspx & app.js files.
 
 var DefaultFilePath = 'calibre.docx';
 var isImageToggle = false;

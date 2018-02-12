@@ -147,11 +147,6 @@
         <md-content flex layout="row">
       <md-content flex id="content" md-scroll-xy class="md-padding" role="main">
         <div ng-controller="PagesController">
-<%--            <md-card ng-repeat="item in lstPagesHTML" ng-value="item">
-                <a name="page-view-{{$index + 1}}"></a>
-                <iframe iframe-set-dimensions-onload align="middle" src="#" allowTransparency="true" srcdoc="{{ item }}"></iframe>
-            </md-card>--%>
-
           <md-card ng-repeat="item in docInfo.pages">
             <a name="page-view-{{ item.number }}"></a>
             <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
