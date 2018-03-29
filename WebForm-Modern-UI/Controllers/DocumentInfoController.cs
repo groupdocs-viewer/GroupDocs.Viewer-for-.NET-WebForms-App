@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Web.Http;
 using Viewer_Modren_UI.Helpers;
+using System.IO;
 
 namespace WebForm_Modern_UI.Controllers
 {
@@ -21,7 +22,14 @@ namespace WebForm_Modern_UI.Controllers
             DocumentInfoContainer info = null;
             try
             {
-                info = handler.GetDocumentInfo(file);
+                if (Path.GetExtension(file).ToLower().StartsWith(".xls"))
+                {
+                    info = handler.GetDocumentInfo(file, new GroupDocs.Viewer.Domain.Options.DocumentInfoOptions() { CellsOptions = new GroupDocs.Viewer.Converter.Options.CellsOptions() { CountRowsPerPage = 150, OnePagePerSheet = false } });
+                }
+                else
+                {
+                    info = handler.GetDocumentInfo(file);
+                }
             }
             catch (Exception x)
             {

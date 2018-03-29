@@ -5,6 +5,7 @@ ngApp.value('FilePath', DefaultFilePath);
 ngApp.value('tabselectedIndex', 0);
 ngApp.value('isImage', isImageToggle);
 ngApp.value('Rotate', RotateAngel);
+ngApp.value('totalDisplayed', 3);
 
 ZoomValue = (ZoomValue > 10 ? ZoomValue / 100 : ZoomValue);
 ZoomValue = (ZoomValue <= 0.05 ? 0.05 : ZoomValue);
@@ -52,7 +53,7 @@ ngApp.factory('DocumentPagesFactory', function ($resource) {
     });
 });
 
-ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $http, $window, $mdSidenav, isImage, Zoom, TotalPages, CurrentPage, Watermark, ShowHideTools, FilePath, $mdDialog, FilesFactory, tabselectedIndex) {
+ngApp.controller('ToolbarController', function ToolbarController($rootScope, $scope, $http, $window, $mdSidenav, isImage, totalDisplayed, Zoom, TotalPages, CurrentPage, Watermark, ShowHideTools, FilePath, $mdDialog, FilesFactory, tabselectedIndex) {
 
     $rootScope.tabselectedIndex = tabselectedIndex;
     $scope.showTabDialog = function (ev) {
@@ -169,6 +170,7 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
     };
 
     $scope.isImage = isImage;
+    $scope.totalDisplayed = totalDisplayed;
 
     $scope.$on('selected-file-changed', function ($event, selectedFile) {
         $rootScope.selectedFile = selectedFile;
@@ -258,6 +260,11 @@ ngApp.controller('ToolbarController', function ToolbarController($rootScope, $sc
         if ($rootScope.selectedFile) {
             TotalPages = parseInt(TotalDocumentPages);
             CurrentPage = parseInt(CurrentDocumentPage);
+
+            var totalToDisplay = parseInt($scope.totalDisplayed);
+            if (totalToDisplay < TotalPages) {
+                $scope.totalDisplayed = (totalToDisplay + 3);
+            }
 
             if (options == '+') {
                 CurrentPage += 1;

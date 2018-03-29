@@ -40,6 +40,12 @@ namespace WebForm_Modern_UI.Controllers
             options.PageNumber = page;
             options.CountPagesToRender = 1;
 
+            if (Path.GetExtension(file).ToLower().StartsWith(".xls"))
+            {
+                options.CellsOptions.OnePagePerSheet = false;
+                options.CellsOptions.CountRowsPerPage = 150;
+            }
+
             if (watermarkText != "")
                 options.Watermark = Utils.GetWatermark(watermarkText, watermarkColor, watermarkPosition, watermarkWidth, watermarkOpacity);
 

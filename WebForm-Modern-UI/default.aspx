@@ -147,7 +147,7 @@
         <md-content flex layout="row">
       <md-content flex id="content" md-scroll-xy class="md-padding" role="main">
         <div ng-controller="PagesController">
-          <md-card ng-repeat="item in docInfo.pages">
+          <md-card ng-repeat="item in docInfo.pages | limitTo:totalDisplayed">
             <a name="page-view-{{ item.number }}"></a>
             <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
           </md-card>

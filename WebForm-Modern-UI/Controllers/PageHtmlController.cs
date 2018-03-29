@@ -9,6 +9,7 @@ using GroupDocs.Viewer.Converter.Options;
 using GroupDocs.Viewer.Domain.Html;
 using System.Net.Http.Headers;
 using GroupDocs.Viewer.Domain;
+using System.IO;
 
 namespace WebForm_Modern_UI.Controllers
 {
@@ -28,6 +29,13 @@ namespace WebForm_Modern_UI.Controllers
             options.PageNumbersToRender = pageNumberstoRender;
             options.PageNumber = page;
             options.CountPagesToRender = 1;
+
+            if (Path.GetExtension(file).ToLower().StartsWith(".xls"))
+            {
+                options.CellsOptions.OnePagePerSheet = false;
+                options.CellsOptions.CountRowsPerPage = 150;
+            }
+
             options.HtmlResourcePrefix = "/pageresource?file=" + file + "&page=" + page + "&resource=";
             if (watermarkText != "")
                 options.Watermark = Utils.GetWatermark(watermarkText, watermarkColor, watermarkPosition, watermarkWidth, watermarkOpacity);
