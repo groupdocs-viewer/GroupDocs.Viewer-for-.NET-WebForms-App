@@ -41,7 +41,7 @@ namespace WebForm_Modern_UI.Controllers
 
                 if (isdownload)
                 {
-                    result.Content.Headers.Add("content-disposition", "attachment; filename=" + Path.GetFileNameWithoutExtension(file) + ".pdf");
+                    result.Content.Headers.Add("content-disposition", "attachment; filename=\"" + Path.GetFileNameWithoutExtension(file) + ".pdf\"");
                     result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                 }
                 else
