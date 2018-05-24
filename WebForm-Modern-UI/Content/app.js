@@ -416,17 +416,17 @@ ngApp.controller('ThumbnailsController',
 
 ngApp.factory('PagesHtmlFactory', function ($resource, $rootScope, Watermark, FilePath) {
     return $resource('/pageshtml?file='
-                        + FilePath + '&page=' + 1
-                        + '&watermarkText=' + Watermark.Text
-                        + '&watermarkColor=' + Watermark.Color
-                        + '&watermarkPosition=' + Watermark.Position
-                        + '&watermarkWidth=' + Watermark.Width
-                        + '&watermarkOpacity=' + Watermark.Opacity, {
-                            query: {
-                                method: 'GET',
-                                isArray: true
-                            }
-                        });
+        + FilePath + '&page=' + 1
+        + '&watermarkText=' + Watermark.Text
+        + '&watermarkColor=' + Watermark.Color
+        + '&watermarkPosition=' + Watermark.Position
+        + '&watermarkWidth=' + Watermark.Width
+        + '&watermarkOpacity=' + Watermark.Opacity, {
+            query: {
+                method: 'GET',
+                isArray: true
+            }
+        });
 });
 
 ngApp.controller('PagesController',
@@ -472,36 +472,37 @@ ngApp.controller('PagesController',
         $scope.createPageUrl = function (selectedFile, itemNumber) {
             if (isImage) {
                 return $sce.trustAsResourceUrl('/pageimage?file='
-                        + selectedFile + '&width=700&page=' + itemNumber
-                        + '&watermarkText=' + Watermark.Text
-                        + '&watermarkColor=' + Watermark.Color
-                        + '&watermarkPosition=' + Watermark.Position
-                        + '&watermarkWidth=' + Watermark.Width
-                        + '&watermarkOpacity=' + Watermark.Opacity
-                        + '&rotate=' + Rotate
-                        + '&zoom=' + parseInt(Zoom * 100));
+                    + selectedFile + '&width=700&page=' + itemNumber
+                    + '&watermarkText=' + Watermark.Text
+                    + '&watermarkColor=' + Watermark.Color
+                    + '&watermarkPosition=' + Watermark.Position
+                    + '&watermarkWidth=' + Watermark.Width
+                    + '&watermarkOpacity=' + Watermark.Opacity
+                    + '&rotate=' + Rotate
+                    + '&zoom=' + parseInt(Zoom * 100));
             }
             else {
                 return $sce.trustAsResourceUrl('/pagehtml?file='
-                        + selectedFile + '&page=' + itemNumber
-                        + '&watermarkText=' + Watermark.Text
-                        + '&watermarkColor=' + Watermark.Color
-                        + '&watermarkPosition=' + Watermark.Position
-                        + '&watermarkWidth=' + Watermark.Width
-                        + '&watermarkOpacity=' + Watermark.Opacity);
-            }
-        };
-
-        $scope.createAttachmentPageUrl = function (selectedFile, attachmentName, itemNumber) {
-            return $sce.trustAsResourceUrl('/attachmenthtml?file=' + selectedFile
-                    + '&attachment=' + attachmentName
-                    + '&page=' + itemNumber
+                    + selectedFile + '&page=' + itemNumber
                     + '&watermarkText=' + Watermark.Text
                     + '&watermarkColor=' + Watermark.Color
                     + '&watermarkPosition=' + Watermark.Position
                     + '&watermarkWidth=' + Watermark.Width
                     + '&watermarkOpacity=' + Watermark.Opacity);
+            }
         };
+
+        $scope.createAttachmentPageUrl = function (selectedFile, attachmentName, itemNumber) {
+            return $sce.trustAsResourceUrl('/attachmenthtml?file=' + selectedFile
+                + '&attachment=' + attachmentName
+                + '&page=' + itemNumber
+                + '&watermarkText=' + Watermark.Text
+                + '&watermarkColor=' + Watermark.Color
+                + '&watermarkPosition=' + Watermark.Position
+                + '&watermarkWidth=' + Watermark.Width
+                + '&watermarkOpacity=' + Watermark.Opacity);
+        };
+
     }
 );
 
@@ -515,14 +516,14 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
                 ZoomValue = (ZoomValue >= 6 ? 6 : ZoomValue);
 
                 var body = element[0].contentWindow.document.body,
-                            html = element[0].contentWindow.document.documentElement,
-                            height = Math.max(
-                                body.scrollHeight,
-                                body.offsetHeight,
-                                html.clientHeight,
-                                html.scrollHeight,
-                                html.offsetHeight
-                        );
+                    html = element[0].contentWindow.document.documentElement,
+                    height = Math.max(
+                        body.scrollHeight,
+                        body.offsetHeight,
+                        html.clientHeight,
+                        html.scrollHeight,
+                        html.offsetHeight
+                    );
 
                 if (!EnableContextMenu)
                     element[0].contentWindow.document.body.setAttribute("oncontextmenu", "return false;");
@@ -535,17 +536,17 @@ ngApp.directive('iframeSetDimensionsOnload', [function () {
                 if (isImageToggle)
                     element[0].contentWindow.document.body.style.cssText = "text-align: center !important;";
 
-                element[0].style.cssText = "height:" + parseInt(height) + "px!important; width:100%!important; ";
+                element[0].style.cssText = "height:" + parseInt(height) + "px!important";
 
                 height = (height * (parseFloat(ZoomValue) < 1 ? 1 : parseFloat(ZoomValue)));
                 height = parseInt(height);
                 height = parseInt(height) + 10;
 
                 if (ZoomValue > 1) {
-                    element[0].style.cssText = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -moz-transform-origin: 0 0; -o-transform: scale(" + ZoomValue + "); -o-transform-origin: 0 0; -webkit-transform: scale(" + ZoomValue + "); -webkit-transform-origin: 0 0; height:" + height + "px !important; width:100%!important; overflow: visible !important;";
+                    element[0].style.cssText = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -moz-transform-origin: 0 0; -o-transform: scale(" + ZoomValue + "); -o-transform-origin: 0 0; -webkit-transform: scale(" + ZoomValue + "); -webkit-transform-origin: 0 0; height:" + height + "px !important;";
                 }
                 else {
-                    element[0].style.cssText = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -o-transform: scale(" + ZoomValue + "); -webkit-transform: scale(" + ZoomValue + "); height:" + height + "px !important; width:100%!important; overflow: visible !important;";
+                    element[0].style.cssText = "zoom: " + ZoomValue + "; -moz-transform: scale(" + ZoomValue + "); -o-transform: scale(" + ZoomValue + "); -webkit-transform: scale(" + ZoomValue + "); height:" + height + "px !important;";
                 }
 
                 var selectObj = document.getElementById('zoomselect');
@@ -589,3 +590,4 @@ ngApp.directive('myEnter', function () {
         });
     };
 });
+
