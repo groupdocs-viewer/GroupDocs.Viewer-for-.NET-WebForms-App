@@ -50,15 +50,18 @@
         WatermarkOpacity = 180; // integer values.
   </script>
     <script src="/Content/app.js"></script>
+    <script src="app.directive.autoresize.js"></script>
+    <script src="app.controller.pages.js"></script>
+    <script src="app.run.js"></script>
 </head>
 <body oncontextmenu="if (!EnableContextMenu) return false;">
 
-    <div ng-app="GroupDocsViewer" ng-cloak flex layout="column" style="height: 100%;">
+    <div ng-app="GroupDocsViewerApp" ng-cloak flex layout="column" style="height: 100%;">
         <md-toolbar ng-controller="ToolbarController" layout="row" hide-print md-whiteframe="4" class="md-toolbar-tools md-scroll-shrink">
       <md-button class="md-icon-button" ng-click="toggleLeft()" ng-hide="ShowHideTools.IsThubmnailPanel">
         <md-icon>menu</md-icon>
       </md-button>
-      <a href="/"><img src="/Content/GDVLogo.png" /></a>&nbsp; <a href="/"><h1>Viewer for .NET (Web Forms)</h1></a>
+      <a href="/"><img src="/Content/GDVLogo.png" /></a>&nbsp; <a href="/"></a>
       <span flex></span>
       <md-switch ng-change="onSwitchChange(data.toggleView)" ng-model="data.toggleView" aria-label="HTML View" ng-hide="ShowHideTools.IsShowImageToggle" ng-true-value="'Image View'" ng-false-value="'HTML View'">
         {{ data.toggleView }}
@@ -135,7 +138,6 @@
           <md-menu-item ng-hide="ShowHideTools.IsShowPrint">
             <md-button ng-click="printPdf(true)" ng-disabled="!selectedFile">
               <md-icon md-menu-origin md-menu-align-target>print</md-icon>
-              Print Original Document
             </md-button>
           </md-menu-item>
         </md-menu-content>
@@ -146,10 +148,11 @@
     </md-toolbar>
         <md-content flex layout="row">
       <md-content flex id="content" md-scroll-xy class="md-padding" role="main">
-        <div ng-controller="PagesController">
-          <md-card ng-repeat="item in docInfo.pages | limitTo:totalDisplayed">
+        <div id="pages-container" ng-controller="PagesController">
+          <md-card class="page-content-wrapper" id="page-content-wrapper-{{item.number}}" ng-repeat="item in docInfo.pages">
             <a name="page-view-{{ item.number }}"></a>
-            <iframe iframe-set-dimensions-onload align="middle" ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
+            <iframe ng-show="!isImage" iframe-autoresize ng-src="{{ createPageUrl(selectedFile, item.number) }}" allowTransparency="true"></iframe>
+            <img ng-show="isImage" ng-src="{{ createPageUrl(selectedFile, item.number) }}" />
           </md-card>
           <md-card ng-repeat="attachment in docInfo.attachments">
             <a name="page-view-{{$index + 2}}"></a>

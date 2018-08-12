@@ -113,6 +113,9 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app.controller.pages.js" />
+    <Content Include="app.directive.autoresize.js" />
+    <Content Include="app.run.js" />
     <Content Include="App_Data\cache\apachecon-scaling_pptx\html\fd.xml" />
     <Content Include="App_Data\cache\calibre_docx\html\fd.xml" />
     <Content Include="App_Data\cache\candy_pdf\html\fd.xml" />

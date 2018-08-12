@@ -1,30 +1,25 @@
-html, body
-{
+html, body {
     display: block;
     margin: 0;
     padding: 0;
 }
 
-iframe
-{
-    width: 100%;
+iframe {
     margin: 0px;
     background-color: #fff;
     border: 0;
+    width: 100%;
 }
 
-.selectedthumbnail
-{
-    border: 3px solid #240cf5!important;
+.selectedthumbnail {
+    border: 3px solid #240cf5 !important;
 }
 
-.thumbnail img
-{
+.thumbnail img {
     cursor: pointer;
 }
 
-.toolbarbox
-{
+.toolbarbox {
     margin: 0 3px;
     background-color: rgba(17,83,137,0.1);
     border: solid 1px rgba(255,255,255,0.1);
@@ -34,31 +29,26 @@ iframe
     position: relative;
 }
 
-table
-{
+table {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
     width: 100%;
 }
 
-    table td, th
-    {
+    table td, th {
         border: 1px solid #ddd;
         padding: 8px;
     }
 
-    table tr:nth-child(even)
-    {
+    table tr:nth-child(even) {
         background-color: #f2f2f2;
     }
 
-    table tr:hover
-    {
+    table tr:hover {
         background-color: #ddd;
     }
 
-    table th
-    {
+    table th {
         padding-top: 12px;
         padding-bottom: 12px;
         text-align: left;
@@ -66,13 +56,12 @@ table
         color: white;
     }
 
-.fileLink
-{
+.fileLink {
     cursor: pointer;
     color: #0e1196;
 }
-.input_search
-{
+
+.input_search {
     float: left;
     width: 150px;
     height: 27px;
@@ -86,4 +75,21 @@ table
     -webkit-box-shadow: 0 2px 5px 2px rgba(0,0,0,0.2) inset;
     -moz-box-shadow: 0 2px 5px 2px rgba(0,0,0,0.2) inset;
     box-shadow: 0 2px 5px 2px rgba(0,0,0,0.2) inset;
+}
+
+.page-content-wrapper {
+    width: 100%;
+    display: block;
+    background-color: red;
+}
+
+    .page-content-wrapper > iframe {
+        margin-right: auto;
+        margin-left: auto;
+        display: block;
+        overflow: visible !important;
+    }
+
+#pages-container{
+    margin: inherit auto;
 }
