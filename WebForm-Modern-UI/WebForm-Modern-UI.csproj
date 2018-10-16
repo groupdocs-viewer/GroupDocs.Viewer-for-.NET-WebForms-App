@@ -47,7 +47,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GroupDocs.Viewer">
-      <HintPath>..\packages\GroupDocs.Viewer.18.3.0\lib\GroupDocs.Viewer.dll</HintPath>
+      <HintPath>..\packages\GroupDocs.Viewer.18.10.0\lib\GroupDocs.Viewer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -113,20 +113,14 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="app.controller.pages.js" />
-    <Content Include="app.directive.autoresize.js" />
-    <Content Include="app.run.js" />
-    <Content Include="App_Data\cache\apachecon-scaling_pptx\html\fd.xml" />
-    <Content Include="App_Data\cache\calibre_docx\html\fd.xml" />
-    <Content Include="App_Data\cache\candy_pdf\html\fd.xml" />
-    <Content Include="App_Data\README.txt" />
+    <Content Include="app.*.js" />
     <Content Include="Content\custom.js" />
     <Content Include="Content\GDVLogo.png" />
-    <Content Include="packages.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="App_Data\calibre.docx" />
-    <Content Include="App_Data\candy.pdf" />
+    <Content Include="Content\app.js" />
+    <Content Include="Content\style.css" />
+    <Content Include="default.aspx" />
+    <Content Include="Global.asax" />
+    <Content Include="Web.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -135,25 +129,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\app.js" />
-    <Content Include="Content\style.css" />
-    <Content Include="default.aspx" />
-    <Content Include="Global.asax" />
-    <Content Include="Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Controllers\AttachmentHtmlController.cs" />
-    <Compile Include="Controllers\AttachmentImageController.cs" />
-    <Compile Include="Controllers\AttachmentResourceController.cs" />
-    <Compile Include="Controllers\PrintableHtmlPdfController.cs" />
-    <Compile Include="Controllers\PagesHtmlController.cs" />
-    <Compile Include="Controllers\FileUploadController.cs" />
-    <Compile Include="Controllers\DocumentInfoController.cs" />
-    <Compile Include="Controllers\DownloadOriginalController.cs" />
-    <Compile Include="Controllers\DownloadPdfController.cs" />
-    <Compile Include="Controllers\PageHtmlController.cs" />
-    <Compile Include="Controllers\PageImageController.cs" />
-    <Compile Include="Controllers\PageResourceController.cs" />
+    <Compile Include="Controllers\*.cs" />
+    <Compile Include="Helpers\*.cs" />
+    <Compile Include="Properties\*.cs" />
     <Compile Include="default.aspx.cs">
       <DependentUpon>default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -161,25 +139,9 @@
     <Compile Include="default.aspx.designer.cs">
       <DependentUpon>default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\Utils.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page1\" />
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page2\" />
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page3\" />
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page4\" />
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page5\" />
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page6\" />
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page7\" />
-    <Folder Include="App_Data\cache\calibre_docx\html\resources\page8\" />
-    <Folder Include="App_Data\cache\candy_pdf\html\resources\page1\" />
-    <Folder Include="App_Data\cache\candy_pdf\html\resources\page2\" />
-    <Folder Include="App_Data\temp\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

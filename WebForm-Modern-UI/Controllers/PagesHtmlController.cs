@@ -30,7 +30,7 @@ namespace WebForm_Modern_UI.Controllers
             //options.PageNumber = page;
             //options.CountPagesToRender = 1;
             //options.HtmlResourcePrefix = "/pageresource?file=" + file + "&page=" + page + "&resource=";
-            options.IsResourcesEmbedded = true;
+            options.EmbedResources = true;
             if (watermarkText != "")
                 options.Watermark = Utils.GetWatermark(watermarkText, watermarkColor, watermarkPosition, watermarkWidth, watermarkOpacity);
 
