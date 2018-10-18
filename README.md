@@ -1,6 +1,6 @@
 ![Outdated](http://alexbobkov.com/resources/image/outdated.png)
   
-This repository is outdated, instead please use one of the following repositories:  
+This repository is outdated, instead please use following repository:  
 https://github.com/groupdocs-viewer/GroupDocs.Viewer-for-.NET-WebForms
 
 # GroupDocs.Viewer for .NET WebForms App
@@ -11,7 +11,7 @@ ASP.NET WebForms based document viewer that supports many different formats of d
 
 # Features
 + Accepts more than 50 Different Formats of Documents
-+ Html Representation of the Document
++ Html Representation of the Documentone
 + Image Representation of the Document
 + Download OR Open Document
 + Display Emails Attachments and Emails Attachment's Thumbnails
